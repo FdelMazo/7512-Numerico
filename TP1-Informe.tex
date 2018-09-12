@@ -2,7 +2,7 @@
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
-\usepackage{lastpage,sectsty,hyperref,graphicx,pdfpages,fancyhdr}
+\usepackage{lastpage,sectsty,hyperref,graphicx,pdfpages,fancyhdr,listings}
 
 \sectionfont{\fontsize{12}{15}\selectfont}
 \linespread{1.25} % Interlineado 1.5
@@ -81,12 +81,14 @@
 \setcounter{page}{1}
 
 \section{Introducción}
-Introducción, que incluya \cite{Wickham} los objetivos específicos del TP, puede incluir descripción del
+Introducción, que incluya los objetivos específicos del TP, puede incluir descripción del
 problema concreto a resolver y mencionar los métodos específicos empleados y un resumen del
 trabajo (1 página máximo; no incluir explicaciones teóricas en esta sección, ni generalidades
 sobre el cálculo numérico).
 
 \section{Desarrollo}
+Para los cálculos del \(\mu\) se utilizó el algoritmo del ejemplo 6.4 del libro de Hernan Gonzales \cite{Gonzales}.
+ 
  Desarrollo del trabajo (en esta sección explicarán cómo emplearon/adaptaron los
 resultados teóricos ya dados en clase para resolver el problema numérico particular, y cómo
 salvaron dificultades halladas en la implementación; emplearán el editor de ecuaciones -o
@@ -105,6 +107,10 @@ incluirán figuras (realizadas con Octave o Matlab) y breves tablas.
 \newpage
 \appendix
 \section{Anexo I: Código Fuente}
+
+\lstinputlisting[language=Octave]{mu_simple.m}
+\lstinputlisting[language=Octave]{mu_doble.m}
+
 Anexo I: código fuente impreso (obligatorio) realizado en Octave o Matlab de todos los
 archivos .m empleados. Citar el sofware y versión empleados, así como el equipo usado para
 ejecutarlo. (de emplear Octave, procurar mantener el código compatible con Matlab,
@@ -112,6 +118,13 @@ procediendo como se explicó en clase, por ejemplo: uso de end en vez de endif, 
 definición de funciones con el comando function en un archivo .m y no usando @, etc.).
 
 \section{Anexo II: Resultados Numéricos}
+\begin{lstlisting}[language=Octave]
+>> mu_simple
+mu =    1.0000e-08
+>> mu_doble
+mu =    1.0000e-16
+\end{lstlisting}
+
 Anexo II: Resultados numéricos completos obtenidos al correr el programa (máximo 5
 hojas). Acá colocar las tablas completas de resultados, de ser pertinente.
 
@@ -121,8 +134,17 @@ teóricas de las fórmulas, o explicación de comandos de Octave o Matlab emplea
 fueron explicados en clase, o del contexto o aplicación (opcional) (máximo 2 hojas)
 
 \newpage
-\bibliographystyle{plain}
-\bibliography{TP1-Bibliografia}{}
 
+\phantomsection 
+\addcontentsline{toc}{section}{Bibliografía}
+\renewcommand\refname{Bibliografía}
+\begin{thebibliography}{9}
+
+\bibitem{Gonzales} 
+Gonzales, Hernan: 
+\textit{Análisis Numérico, Primer Curso}
+Buenos Aires: Nueva Librería, 2002.
+
+\end{thebibliography}
 \end{document}
 
