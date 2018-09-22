@@ -6,6 +6,7 @@ function y = main
   global LIM_INF = 1; global LIM_SUP = 240; 
   
   n = calcular_n(ERR_MAX)
+  y = calcular_area(n)
 end
 
 function y = funcion(x)
@@ -39,4 +40,14 @@ function n = calcular_n(error_maximo_truncamiento)
   n = sqrt(abs(num/denom));
 end
 
-
+function a = calcular_area(n)
+  global LIM_SUP LIM_INF
+  h = ( LIM_SUP - LIM_INF ) / n
+  f_inicio = funcion(LIM_INF) / 2
+  f_fin = funcion(LIM_SUP) / 2
+  f_i = 0
+  for i = 1:n-1;
+    f_i = f_i + funcion(LIM_INF + i*h) * h
+  endfor
+  a = ( f_inicio + f_fin ) * h + f_i
+end
