@@ -5,7 +5,7 @@ function integral = main
   global ERR_MAX = 10e-5;
   global LIM_INF = 1; global LIM_SUP = 240; 
   n = calcular_n(ERR_MAX)
-  integral = calcular_todas_las_areas(n);
+  integral = calcular_area(n);
 end
 
 function y = f(x)
@@ -39,25 +39,17 @@ function n = calcular_n(error_maximo_truncamiento)
   n = sqrt(abs(num/denom));
 end
 
-function a = calcular_todas_las_areas(n)
-  global LIM_INF LIM_SUP;
-  resultado = 0;
-  base = ( LIM_SUP - LIM_INF ) / n;
-  ini = LIM_INF;
-  fin = LIM_INF + base;
-  for i = 0:n;
-    resultado += calcular_area_trapecio(base,ini,fin);
-    ini+=base;
-    fin+=base;
+
+
+
+function a = calcular_area(n)
+  global LIM_SUP LIM_INF;
+  h = ( LIM_SUP - LIM_INF ) ./ n
+  f_inicio = f(LIM_INF) / 2;
+  f_fin = f(LIM_SUP) / 2;
+  f_i = 0;
+  for i = 1:n-1;
+    f_i = f_i + f(LIM_INF + i*h) * h;
   end
-  a = resultado;
+    a = ( f_inicio + f_fin ) * h + f_i;
 end
-
-function a_trap = calcular_area_trapecio(base,ini,fin)
-    if (f(ini)<f(fin)); altura_rectangulo = (f(ini)); else; altura_rectangulo = (f(fin)); end; 
-    if (f(ini)>f(fin)); altura_triangulo = (f(ini)); else; altura_triangulo = (f(fin)); end;
-    area_rectangulo = base * altura_rectangulo; 
-    area_triangulo = (base * altura_triangulo) / 2;
-    a_trap = area_rectangulo + area_triangulo;
-end
-
