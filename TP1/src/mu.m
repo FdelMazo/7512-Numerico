@@ -1,6 +1,6 @@
 function mu
-  mu_doble
   mu_simple
+  mu_doble
 end
 
 function mu_doble

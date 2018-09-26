@@ -1,21 +1,20 @@
-function y = main
+function integral = main
   padron1 = 100029; padron2 = 99779;
-  global P = (padron1 + padron2) / 50;
+  global P = (padron1 + padron2) / 50
   global ALPHA = 0.17; global BETA = 0.41;
   global ERR_MAX = 10e-5;
   global LIM_INF = 1; global LIM_SUP = 240; 
-  
   n = calcular_n(ERR_MAX)
-  y = calcular_area(n)
+  integral = calcular_todas_las_areas(n);
 end
 
-function y = funcion(x)
+function y = f(x)
   global P ALPHA BETA
 
   y = ( sin(x.*P) + BETA * (x.^2) ) ./ (x.*ALPHA);
 end
 
-function y = derivada_1(x)
+function y = fderivada(x)
   global P ALPHA BETA
 
   primer_term = (P./(ALPHA.*x)) .* cos(P.*x);
@@ -24,7 +23,7 @@ function y = derivada_1(x)
   y = primer_term + segundo_term + tercer_term;
 end
 
-function y = derivada_2(x)
+function y = fderivada2(x)
   global P ALPHA BETA
  
   primer_term = - (2.*P.*cos(P.*x) ) ./ (ALPHA .* (x.^2) );
@@ -35,19 +34,30 @@ end
 
 function n = calcular_n(error_maximo_truncamiento)
   global LIM_SUP LIM_INF
-  num = - ( (LIM_SUP - LIM_INF)^3 ) * derivada_2(1);
+  num = - ( (LIM_SUP - LIM_INF)^3 ) * fderivada2(1);
   denom = error_maximo_truncamiento * 12;
   n = sqrt(abs(num/denom));
 end
 
-function a = calcular_area(n)
-  global LIM_SUP LIM_INF
-  h = ( LIM_SUP - LIM_INF ) / n
-  f_inicio = funcion(LIM_INF) / 2
-  f_fin = funcion(LIM_SUP) / 2
-  f_i = 0
-  for i = 1:n-1;
-    f_i = f_i + funcion(LIM_INF + i*h) * h
-  endfor
-  a = ( f_inicio + f_fin ) * h + f_i
+function a = calcular_todas_las_areas(n)
+  global LIM_INF LIM_SUP;
+  resultado = 0;
+  base = ( LIM_SUP - LIM_INF ) / n;
+  ini = LIM_INF;
+  fin = LIM_INF + base;
+  for i = 0:n;
+    resultado += calcular_area_trapecio(base,ini,fin);
+    ini+=base;
+    fin+=base;
+  end
+  a = resultado;
 end
+
+function a_trap = calcular_area_trapecio(base,ini,fin)
+    if (f(ini)<f(fin)); altura_rectangulo = (f(ini)); else; altura_rectangulo = (f(fin)); end; 
+    if (f(ini)>f(fin)); altura_triangulo = (f(ini)); else; altura_triangulo = (f(fin)); end;
+    area_rectangulo = base * altura_rectangulo; 
+    area_triangulo = (base * altura_triangulo) / 2;
+    a_trap = area_rectangulo + area_triangulo;
+end
+

@@ -2,7 +2,7 @@
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
-\usepackage{lastpage,sectsty,hyperref,graphicx,pdfpages,fancyhdr,listings}
+\usepackage{commath,amsmath,lastpage,float,sectsty,hyperref,graphicx,pdfpages,fancyhdr,listings,siunitx}
 
 \sectionfont{\fontsize{12}{15}\selectfont}
 \linespread{1.25} % Interlineado 1.5
@@ -13,6 +13,14 @@
     pdftitle={Trabajo Práctico 1},
 	pdfsubject={Análisis Numérico I},
 	pdfauthor={del Mazo Federico, Kristal Juan Ignacio},
+}
+
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
 }
 
 \fancypagestyle{enunciado}{
@@ -81,57 +89,108 @@
 \setcounter{page}{1}
 
 \section{Introducción}
-Introducción, que incluya los objetivos específicos del TP, puede incluir descripción del
-problema concreto a resolver y mencionar los métodos específicos empleados y un resumen del
-trabajo (1 página máximo; no incluir explicaciones teóricas en esta sección, ni generalidades
-sobre el cálculo numérico).
+El trabajo práctico tiene como objetivo el cálculo y acotamiento de errores de la siguiente integral:
+
+\[ F(\alpha,\beta) = \int_{1}^{240}  \frac{\sin{(P x)}  + \beta x^2}{\alpha x} dx \]
+
+Siendo:
+\begin{itemize}
+\item \( P = \frac{\sum\limits_{padrones}^{}}{50} = \frac{99779 + 100029}{50} = 3996.16 \) exacto 
+\item \( \alpha = 0.17 \) bien redondeando
+\item \( \beta = 0.41 \) bien redondeando
+\end{itemize}
+
+Específicamente:
+
+\begin{itemize}
+\item Se estimará el valor de la unidad de maquina \( \mu \).
+\item Se evaluará la integral con el método de trapecios compuestos teniendo con objetivo en mente que el error absoluto de truncamiento sea menor a \num{1e-5}.
+\item Se calculará computacionalmente la cantidad de trapecios utilizada en el método descrito anteriormente.
+\item Se calculará la condición del problema mediante perturbaciones experimentales.
+\item Se estimará experimentalmente el término de estabilidad.
+\item Se acotará el error total.
+\end{itemize}
 
 \section{Desarrollo}
-Para los cálculos del \(\mu\) se utilizó el algoritmo del ejemplo 6.4 del libro de Hernan Gonzales \cite{Gonzales}.
- 
- Desarrollo del trabajo (en esta sección explicarán cómo emplearon/adaptaron los
-resultados teóricos ya dados en clase para resolver el problema numérico particular, y cómo
-salvaron dificultades halladas en la implementación; emplearán el editor de ecuaciones -o
-similar- para las fórmulas que mencione; centrando las fórmulas y numerándolas). La
-bibliografía consultada debe estar referenciada en la sección correspondiente. El código
-resultante no va en el desarrollo, sino que se colocará en el Anexo I.
+
+\subsection{Estimación de \( \mu \) }
+
+Para los cálculos del \( \mu \) se utilizó el algoritmo del ejemplo 6.4 del libro de Hernan Gonzales \cite{Gonzales}.
+
+\subsection{Función y sus derivadas}
+
+Siempre teniendo en cuenta los valores de \(P, \alpha, \beta \) previamente utilizados, definimos la funcion \( f(x) \) como:
+
+\[ f(x) = \frac{\sin{(P x)}  + \beta x^2}{\alpha x} dx \]
+
+Graficamos la función para saber un poco más de ella en la figura \ref{fig:funcion}
+
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/funcion.jpg}}
+	\caption{\(f(x)\)}
+	\label{fig:funcion}
+\end{figure}
+
+De esta función calculamos sus derivadas y las graficamos en las figuras \ref{fig:funcionderivada} y \ref{fig:funcionderivada2}, para utilizar en cálculos posteriores.
+
+\[ f'(x) = \frac{P \cos{(P x)}}{\alpha x} - \frac{ \sin{(P x)}}{\alpha x^2} + \frac{\beta}{\alpha} \]
+
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/funcionderivada.jpg}}
+	\caption{\(f'(x)\)}
+	\label{fig:funcionderivada}
+\end{figure}
+
+\[ f''(x) = - \frac{2 P \cos{(P x)}}{\alpha x^2} + \frac{2 \sin{(P x)}}{\alpha x^3} - \frac{P^2 \sin{(P x)}}{\alpha x}\]
+
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/funcionderivada2.jpg}}
+	\caption{\(f''(x)\)}
+	\label{fig:funcionderivada2}
+\end{figure}
+
+\subsection{Método de trapecios compuestos}
+
+Sabemos que el error de truncamiento producido por el método de trapecios compuestos es:
+
+\[ \epsilon_t = - \frac{{(b - a)}^3}{12 n^2} * f''(\xi) \]
+
+Donde \(b, a\) son los limites de integración y \(n\) es la cantidad de trapecios. Como lo que queremos es acotar el error de truncamiento, debemos evaluar a la segunda derivada en su imagen máxima, es decir \(\xi = 1 \)
+
+Por lo tanto, y ahora con el error de truncamiento al que queremos llegar, despejamos la cantidad de trapecios:
+
+\[ n = \sqrt{ \abs{ - \frac{(b - a)^3 * f''(1)}{12 \epsilon_t}}} \]
+
+\subsection{Condición del problema y término de estabilidad}
+
 
 \section{Resultados}
- Resultados: se espera un resumen que permita observar de forma clara y sencilla los
-resultados obtenidos desde que se procede a ejecutar el código. Cuando corresponda, se
-incluirán figuras (realizadas con Octave o Matlab) y breves tablas.
 
 \section{Conclusiones}
- Conclusiones, que incluyan el análisis y la discusión (específica) de los resultados.
 
 \newpage
 \appendix
 \section{Anexo I: Código Fuente}
 
-\lstinputlisting[language=Octave]{src/mu.m}
-\lstinputlisting[language=Octave]{src/main.m}
+\lstinputlisting[language=Octave,title=\texttt{mu.m}]{src/mu.m}
 
-Anexo I: código fuente impreso (obligatorio) realizado en Octave o Matlab de todos los
-archivos .m empleados. Citar el sofware y versión empleados, así como el equipo usado para
-ejecutarlo. (de emplear Octave, procurar mantener el código compatible con Matlab,
-procediendo como se explicó en clase, por ejemplo: uso de end en vez de endif, endfor...;
-definición de funciones con el comando function en un archivo .m y no usando @, etc.).
+\newpage
+\lstinputlisting[language=Octave,title=\texttt{main.m}]{src/main.m}
 
+\newpage
 \section{Anexo II: Resultados Numéricos}
-\begin{lstlisting}[language=Octave]
->> mu_simple
-mu =    1.0000e-08
->> mu_doble
-mu =    1.0000e-16
+\begin{lstlisting}[language=Octave,title=Resultados de \texttt{mu.m}]
+>> mu
+mu_simple =    1.0000e-08
+mu_doble =    1.0000e-16
 \end{lstlisting}
 
-Anexo II: Resultados numéricos completos obtenidos al correr el programa (máximo 5
-hojas). Acá colocar las tablas completas de resultados, de ser pertinente.
 
-\section{Anexo III: Información Adicional}
-Anexo III: Otra información relevante, por ejemplo, comentarios sobre las deducciones
-teóricas de las fórmulas, o explicación de comandos de Octave o Matlab empleados que no
-fueron explicados en clase, o del contexto o aplicación (opcional) (máximo 2 hojas)
+\begin{lstlisting}[language=Octave,title=Resultados de \texttt{main.m}]
+>> main
+n =    2.4160e+08
+\end{lstlisting}
+
 
 \newpage
 
