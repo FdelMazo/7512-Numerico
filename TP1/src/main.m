@@ -4,6 +4,7 @@ function integral = main
   global ALPHA = 0.17; global BETA = 0.41;
   global ERR_MAX = 10e-5;
   global LIM_INF = 1; global LIM_SUP = 240; 
+<<<<<<< HEAD
   global MUS = 10e-8;
   n = calcular_n(ERR_MAX)
   global n = 10000000;
@@ -11,6 +12,10 @@ function integral = main
   integral_s = 7.0236e+04;
   te = abs(calcular_te(integral_d, integral_s))
   err = te.*MUS
+  tic
+  n = 10000000
+  integral = calcular_area(n)
+  toc
   for i = 1:16;
     perturbacion = 1/(10 .^i)
     cp = perturbar(perturbacion,n)
@@ -44,16 +49,16 @@ function y = fderivada(x)
   primer_term = (P./(ALPHA.*x)) .* cos(P.*x);
   segundo_term = - ( ( sin(P.*x) ) ./ ( ALPHA .* (x.^2) ) );
   tercer_term = BETA / ALPHA;
-  y = primer_term + segundo_term + tercer_term;
+  y = abs(primer_term) + abs(segundo_term) + abs(tercer_term);
 end
 
 function y = fderivada2(x)
   global P ALPHA BETA
  
-  primer_term = - (2.*P.*cos(P.*x) ) ./ (ALPHA .* (x.^2) );
+  primer_term =  - (2.*P.*cos(P.*x) ) ./ (ALPHA .* (x.^2) );
   segundo_term = 2* sin(P.*x) ./ (ALPHA .* (x.^3) );
-  tercer_term = - ( ( (P^2)*sin(P.*x) ) ./ (ALPHA .* x) );
-  y = primer_term + segundo_term + tercer_term;
+  tercer_term =  - ( ( (P^2)*sin(P.*x) ) ./ (ALPHA .* x) );
+  y = abs(primer_term) + abs(segundo_term) + abs(tercer_term);
 end
 
 function n = calcular_n(error_maximo_truncamiento)
@@ -73,4 +78,23 @@ function a = calcular_area(n)
     f_i = f_i + f(LIM_INF + i*h) * h;
   end
     a = ( f_inicio + f_fin ) * h + f_i;
+end
+
+function g = graficar()
+  fplot(@f, [-0.02 0.02])
+  fplot(@fderivada, [-0.02 0.02])
+  fplot(@fderivada2, [-0.02 0.02])
+end
+
+function y = graficar_n()
+  x = [1,10,100,1000,10000,100000,1000000,10000000];
+  y = [];
+  for n = x
+    n
+    tic;
+    integral = calcular_area(n)
+    y = [y,toc]; 
+    printf("Tiempo = %ds\n\n",y(length(y)))   
+  end
+  plot(x,y,'o-r')
 end
