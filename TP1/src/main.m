@@ -4,8 +4,23 @@ function integral = main
   global ALPHA = 0.17; global BETA = 0.41;
   global ERR_MAX = 10e-5;
   global LIM_INF = 1; global LIM_SUP = 240; 
-  n = calcular_n(ERR_MAX)
-  integral = calcular_area(n);
+  #n = calcular_n(ERR_MAX)
+  global n = 20;
+  integral = calcular_area(n)
+  for i = 1:16;
+    perturbacion = 1/(10 .^i)
+    cp = perturbar(perturbacion,n)
+   end
+end
+
+function cp = perturbar(perturbacion,n)
+  global ALPHA BETA
+  ALPHA += perturbacion; BETA += perturbacion;
+  valor_perturbado_sup = calcular_area(n)
+  ALPHA -= 2 .*perturbacion; BETA -= 2 .*perturbacion;
+  valor_perturbado_inf = calcular_area(n)
+  ALPHA += perturbacion; BETA += perturbacion;
+  cp =  abs((1 .- (valor_perturbado_inf ./ valor_perturbado_sup)) ./ perturbacion);
 end
 
 function y = f(x)
@@ -39,12 +54,9 @@ function n = calcular_n(error_maximo_truncamiento)
   n = sqrt(abs(num/denom));
 end
 
-
-
-
 function a = calcular_area(n)
   global LIM_SUP LIM_INF;
-  h = ( LIM_SUP - LIM_INF ) ./ n
+  h = ( LIM_SUP - LIM_INF ) ./ n;
   f_inicio = f(LIM_INF) / 2;
   f_fin = f(LIM_SUP) / 2;
   f_i = 0;
