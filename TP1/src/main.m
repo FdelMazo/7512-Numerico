@@ -4,13 +4,22 @@ function integral = main
   global ALPHA = 0.17; global BETA = 0.41;
   global ERR_MAX = 10e-5;
   global LIM_INF = 1; global LIM_SUP = 240; 
-  #n = calcular_n(ERR_MAX)
-  global n = 20;
-  integral = calcular_area(n)
+  global MUS = 10e-8;
+  n = calcular_n(ERR_MAX)
+  global n = 10000000;
+  integral_d = 6.9458e+04;
+  integral_s = 7.0236e+04;
+  te = abs(calcular_te(integral_d, integral_s))
+  err = te.*MUS
   for i = 1:16;
     perturbacion = 1/(10 .^i)
     cp = perturbar(perturbacion,n)
    end
+end
+
+function te = calcular_te(d,s)
+  global MUS
+  te = (d.-s)./(d.*(MUS))
 end
 
 function cp = perturbar(perturbacion,n)
