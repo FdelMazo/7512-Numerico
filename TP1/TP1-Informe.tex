@@ -84,7 +84,6 @@
 \thispagestyle{onlyheader}
 \newpage
 
-
 \pagenumbering{arabic}
 \setcounter{page}{1}
 
@@ -161,8 +160,19 @@ Por lo tanto, y ahora con el error de truncamiento al que queremos llegar, despe
 
 \[ n = \sqrt{ \abs{ - \frac{(b - a)^3 * f''(1)}{12 \epsilon_t}}} \]
 
-\subsection{Condición del problema y término de estabilidad}
+\subsection{Truncamiento de n}
 
+Al despejar por el método de los trapecios compuestos el n necesario para tener el error deseado se notó que este valor era de tal magnitud y orden que computacionalmente carecería de sentido usarlo para cada cálculo. Es por esto que se decidió hacer un truncamiento de este valor, para poder tratarlo como es debido y en un lógico margen de tiempo. De todas formas, solo anecdóticamente, se incluye una corrida del programa con el n original.
+
+El criterio para truncar n es el de ver como escala el cálculo de la integral respecto del valor, y luego decidir un punto de corte tratable arbitrariamente (en nuestro caso, 10 minutos). Se puede ver en el gráfico \ref{fig:calcularn} que esta es una función lineal, lo cual tiene sentido ya que lo único que adiciona computacionalmente es el ciclo definido \texttt{for} de la función, haciendolo \(\mathcal{O}(n)\), siendo n el mismo n con el que venimos tratando, redundantemente.
+
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/calcularn.jpg}}
+	\caption{Calculo de la integral para distintos n en funcion del tiempo}
+	\label{fig:calcularn}
+\end{figure}
+
+\subsection{Condición del problema y término de estabilidad}
 
 \section{Resultados}
 
@@ -178,19 +188,74 @@ Por lo tanto, y ahora con el error de truncamiento al que queremos llegar, despe
 \lstinputlisting[language=Octave,title=\texttt{main.m}]{src/main.m}
 
 \newpage
+\lstinputlisting[language=Octave,title=\texttt{singlemain.m}]{src/singlemain.m}
+
+\newpage
 \section{Anexo II: Resultados Numéricos}
+
 \begin{lstlisting}[language=Octave,title=Resultados de \texttt{mu.m}]
 >> mu
 mu_simple =    1.0000e-08
 mu_doble =    1.0000e-16
 \end{lstlisting}
 
-
-\begin{lstlisting}[language=Octave,title=Resultados de \texttt{main.m}]
+\begin{lstlisting}[language=Octave,title=Resultados originales sin truncamiento de n]
 >> main
 n =    2.4160e+08
+Elapsed time is 12404.8 seconds.
+ans =    6.9458e+04
 \end{lstlisting}
 
+\begin{lstlisting}[language=Octave,title=n con precisión simple]
+>> main
+n = 241403216
+\end{lstlisting}
+
+\begin{lstlisting}[language=Octave,title=Resultados con truncamiento de n]
+>> main
+n =  10000000
+integral =    6.9458e+04
+Elapsed time is 725.336 seconds.
+>> singlemain
+n =  10000000
+integral =    7.0236e+04
+Elapsed time is 973.23 seconds.
+\end{lstlisting}
+
+\begin{lstlisting}[language=Octave,title=Truncamiento de n]
+>> graficar_n
+n =  1
+integral =    6.9497e+04
+Tiempo = 0.000295877s
+
+n =  10
+integral =    6.9459e+04
+Tiempo = 0.000695944s
+
+n =  100
+integral =    6.9465e+04
+Tiempo = 0.00530505s
+
+n =  1000
+integral =    6.9465e+04
+Tiempo = 0.0516629s
+
+n =  10000
+integral =    6.9458e+04
+Tiempo = 0.509583s
+
+n =  100000
+integral =    6.9458e+04
+Tiempo = 5.11305s
+
+n =  1000000
+integral =    6.9458e+04
+Tiempo = 51.1415s
+
+n =  10000000
+integral =    6.9458e+04
+Tiempo = 599.773s
+\end{lstlisting}
 
 \newpage
 
