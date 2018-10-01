@@ -12,12 +12,13 @@ function integral = main
   te = abs(calcular_te(integral_d, integral_s))
   err = te.*MUS
   tic
-  n = 10000000
+  n = 10000
   integral = calcular_area(n)
   toc
   for i = 1:16;
     perturbacion = 1/(10 .^i)
-    cp = perturbar(perturbacion,n)
+    cpa = perturbarA(perturbacion,n)
+    cpb = perturbarB(perturbacion,n)
    end
 end
 
@@ -26,13 +27,23 @@ function te = calcular_te(d,s)
   te = (d.-s)./(d.*(MUS))
 end
 
-function cp = perturbar(perturbacion,n)
-  global ALPHA BETA
-  ALPHA += perturbacion; BETA += perturbacion;
-  valor_perturbado_sup = calcular_area(n)
-  ALPHA -= 2 .*perturbacion; BETA -= 2 .*perturbacion;
-  valor_perturbado_inf = calcular_area(n)
-  ALPHA += perturbacion; BETA += perturbacion;
+function cp = perturbarA(perturbacion,n)
+  global ALPHA
+  ALPHA += perturbacion;
+  valor_perturbado_sup = calcular_area(n);
+  ALPHA -= 2 .*perturbacion;
+  valor_perturbado_inf = calcular_area(n);
+  ALPHA += perturbacion;
+  cp =  abs((1 .- (valor_perturbado_inf ./ valor_perturbado_sup)) ./ perturbacion);
+end
+
+function cp = perturbarB(perturbacion,n)
+  global BETA
+  BETA += perturbacion;
+  valor_perturbado_sup = calcular_area(n);
+  BETA -= 2 .*perturbacion;
+  valor_perturbado_inf = calcular_area(n);
+  BETA += perturbacion;
   cp =  abs((1 .- (valor_perturbado_inf ./ valor_perturbado_sup)) ./ perturbacion);
 end
 
