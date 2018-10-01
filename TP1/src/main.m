@@ -4,7 +4,6 @@ function integral = main
   global ALPHA = 0.17; global BETA = 0.41;
   global ERR_MAX = 10e-5;
   global LIM_INF = 1; global LIM_SUP = 240; 
-<<<<<<< HEAD
   global MUS = 10e-8;
   n = calcular_n(ERR_MAX)
   global n = 10000000;
