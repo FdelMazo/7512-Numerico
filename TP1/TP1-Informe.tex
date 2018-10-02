@@ -160,11 +160,13 @@ Por lo tanto, y ahora con el error de truncamiento al que queremos llegar, despe
 
 \[ n = \sqrt{ \abs{ - \frac{(b - a)^3 * f''(1)}{12 \epsilon_t}}} \]
 
-\subsection{Truncamiento de n}
+Es con este n que se puede finalmente implementar la función de el método de los trapecios compuestos.
+
+\subsubsection{Truncamiento de n}
 
 Al despejar por el método de los trapecios compuestos el n necesario para tener el error deseado se notó que este valor era de tal magnitud y orden que computacionalmente carecería de sentido usarlo para cada cálculo. Es por esto que se decidió hacer un truncamiento de este valor, para poder tratarlo como es debido y en un lógico margen de tiempo. De todas formas, solo anecdóticamente, se incluye una corrida del programa con el n original.
 
-El criterio para truncar n es el de ver como escala el cálculo de la integral respecto del valor, y luego decidir un punto de corte tratable arbitrariamente (en nuestro caso, 10 minutos). Se puede ver en el gráfico \ref{fig:calcularn} que esta es una función lineal, lo cual tiene sentido ya que lo único que adiciona computacionalmente es el ciclo definido \texttt{for} de la función, haciendolo \(\mathcal{O}(n)\), siendo n el mismo n con el que venimos tratando, redundantemente.
+El criterio para truncar n es el de ver como escala el cálculo de la integral respecto del valor, y luego decidir un punto de corte tratable arbitrariamente (en nuestro caso, 5 minutos). Se puede ver en el gráfico \ref{fig:calcularn} que esta es una función lineal, lo cual tiene sentido ya que lo único que adiciona computacionalmente es el ciclo definido \texttt{for} de la función, haciendolo \(\mathcal{O}(n)\), siendo n el mismo n con el que venimos tratando, redundantemente.
 
 \begin{figure}[H]
 	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/calcularn.jpg}}
@@ -175,6 +177,20 @@ El criterio para truncar n es el de ver como escala el cálculo de la integral r
 \subsection{Condición del problema y término de estabilidad}
 
 \section{Resultados}
+
+\subsection{Estimación de \( \mu \) }
+
+Con el algoritmo utilizado se llego al resultado \texttt{\num{1e-8}} para el \(\mu\) de precisión simple y \texttt{\num{1e-16}} para el \(\mu\) de precisión doble.
+
+\subsection{Método de trapecios compuestos}
+
+\subsubsection{Precisión simple}
+
+Haciendo los calculos se vió que n es igual a \texttt{\num{2.4160e8}}, y luego se decidió truncar el número n a \texttt{5000000} para que sea un cálculo tratable. Para el n original la integral dió como resultado \texttt{\num{6.9458e+04}}, mientras que para n truncado dió
+
+\subsubsection{Precisión doble}
+
+Haciendo los calculos se vió que n es igual a \texttt{241403216}, y luego se decidió truncar el número n a \texttt{5000000}. Para el n original la integral dió como resultado \texttt{\num{6.9458e+04}}, mientras que para n truncado dió
 
 \section{Conclusiones}
 
@@ -189,6 +205,28 @@ El criterio para truncar n es el de ver como escala el cálculo de la integral r
 
 \newpage
 \lstinputlisting[language=Octave,title=\texttt{singlemain.m}]{src/singlemain.m}
+
+\newpage
+\begin{lstlisting}[language=Octave,title=Generación de graficos]
+fplot(@f, [-0.02 0.02])
+fplot(@fderivada, [-0.02 0.02])
+fplot(@fderivada2, [-0.02 0.02])
+\end{lstlisting}
+
+\begin{lstlisting}[language=Octave,title=Truncamiento y gráfico de n]
+function y = graficar_n()
+x = [1,10,100,1000,10000,100000,1000000,10000000];
+y = [];
+for n = x
+    n
+    tic;
+    integral = calcular_area(n)
+    y = [y,toc]; 
+    printf("Tiempo = %ds\n\n",y(length(y)))   
+end
+plot(x,y,'o-r')
+end
+\end{lstlisting}
 
 \newpage
 \section{Anexo II: Resultados Numéricos}
@@ -213,16 +251,16 @@ n = 241403216
 
 \begin{lstlisting}[language=Octave,title=Resultados con truncamiento de n]
 >> main
-n =  10000000
+n =  5000000
 integral =    6.9458e+04
-Elapsed time is 725.336 seconds.
+Elapsed time is 360.336 seconds.
 >> singlemain
-n =  10000000
+n =  5000000
 integral =    7.0236e+04
-Elapsed time is 973.23 seconds.
+Elapsed time is 450.23 seconds.
 \end{lstlisting}
 
-\begin{lstlisting}[language=Octave,title=Truncamiento de n]
+\begin{lstlisting}[language=Octave,title=Cálculos hechos para el criterio de truncamiento de n]
 >> graficar_n
 n =  1
 integral =    6.9497e+04
