@@ -90,7 +90,9 @@
 \section{Introducción}
 El trabajo práctico tiene como objetivo el cálculo y acotamiento de errores de la siguiente integral:
 
-\[ F(\alpha,\beta) = \int_{1}^{240}  \frac{\sin{(P x)}  + \beta x^2}{\alpha x} dx \]
+\begin{equation}
+    F(\alpha,\beta) = \int_{1}^{240}  \frac{\sin{(P x)}  + \beta x^2}{\alpha x} dx 
+\end{equation}
 
 Siendo:
 \begin{itemize}
@@ -120,29 +122,43 @@ Para los cálculos del \( \mu \) se utilizó el algoritmo del ejemplo 6.4 del li
 
 Siempre teniendo en cuenta los valores de \(P, \alpha, \beta \) previamente utilizados, definimos la funcion \( f(x) \) como:
 
-\[ f(x) = \frac{\sin{(P x)}  + \beta x^2}{\alpha x} \]
+\begin{equation}
+f(x) = \frac{\sin{(P x)}  + \beta x^2}{\alpha x}
+\end{equation}
 
 Graficamos la función para saber un poco más de ella en la figura \ref{fig:funcion}
 
 
+De esta función calculamos sus derivadas y las graficamos en las figuras \ref{fig:funcionderivada} \ref{fig:funcionderivada2}, para utilizar en cálculos posteriores.
 
-De esta función calculamos sus derivadas y las graficamos en las figuras \ref{fig:funcionderivada} y \ref{fig:funcionderivada2}, para utilizar en cálculos posteriores.
+En la figura \ref{fig:funcionderivada2zoom} se puede observar graficamente la cota superior de la funcion derivada segunda y por lo tanto es utilizada como cota para calcular el error de truncamiento
 
-\[ f'(x) = \frac{P \cos{(P x)}}{\alpha x} - \frac{ \sin{(P x)}}{\alpha x^2} + \frac{\beta}{\alpha} \]
+\vspace{2cm}
 
-\[ f''(x) = - \frac{2 P \cos{(P x)}}{\alpha x^2} + \frac{2 \sin{(P x)}}{\alpha x^3} - \frac{P^2 \sin{(P x)}}{\alpha x}\]
+\begin{equation}
+    f'(x) = \frac{P \cos{(P x)}}{\alpha x} - \frac{ \sin{(P x)}}{\alpha x^2} + \frac{\beta}{\alpha}
+\end{equation}
+    
+\begin{equation}
+f''(x) = - \frac{2 P \cos{(P x)}}{\alpha x^2} + \frac{2 \sin{(P x)}}{\alpha x^3} - \frac{P^2 \sin{(P x)}}{\alpha x}
+\end{equation}
 
 \subsection{Método de trapecios compuestos}
 
 Sabemos que el error de truncamiento producido por el método de trapecios compuestos es:
 
-\[ \epsilon_t = - \frac{{(b - a)}^3}{12 n^2} * f''(\xi) \]
-
+\begin{equation}
+    \epsilon_t = - \frac{{(b - a)}^3}{12 n^2} * f''(\xi)
+\end{equation}
+    
 Donde \(b, a\) son los limites de integración y \(n\) es la cantidad de trapecios. Como lo que queremos es acotar el error de truncamiento, debemos evaluar a la segunda derivada en su imagen máxima, es decir \(\xi = 1 \).
 
 Por lo tanto, y ahora con el error de truncamiento al que queremos llegar, despejamos la cantidad de trapecios:
 
-\[ n = \sqrt{ \abs{ - \frac{(b - a)^3 * f''(1)}{12 \epsilon_t}}} \]
+\begin{equation}
+    n  = \sqrt{ \abs{ - \frac{(b - a)^3 * f''(1)}{12 \epsilon_t}}} 
+\end{equation}
+
 
 Es con este n que se puede finalmente implementar la función de el método de los trapecios compuestos.
 
@@ -158,18 +174,27 @@ Para realizar las perturbaciones lo haremos sobre alpha y beta respectivamente, 
 
 Es ahora que, teniendo en cuenta los valores de la integral con precisión simple y precisión doble (utilizando el valor de n no truncado, para poder apreciar de manera mas exagerada la inestabilidad del algoritmo) podemos calcular el valor del término de estabilidad. Esto lo hacemos con la siguiente ecuación:
 
-\[ Te = \frac{integral_doble - integral_simple}{integral_doble*\mu_s} \]
+
+\begin{equation}
+    Te = \frac{integral\_doble - integral\_simple}{integral\_doble*\mu_s}
+\end{equation}
 
 Finalmente, se grafica en la figura \ref{fig:cpsa} y la figura \ref{fig:cpsb} el cálculo del Cp respecto de alpha y beta en cada iteración.
-
 
 \subsection{Error total}
 
 Sabiendo que el error total es la sumatoria de los errores inherentes, de redondeo y de truncamiento querémos ahora acotar el error total.
 
-\[ Et = Ei + Er + Etr \]
 
-\[ Et = Cp * r + Te * \mu_s + Etr \]
+\begin{equation}
+Et = Ei + Er + Etr
+\end{equation}
+
+
+\begin{equation}
+    Et = Cp * r + Te * \mu_s + Etr 
+\end{equation}
+
 
 Este cálculo lo haremos con dos casos en particular:
 
@@ -208,6 +233,13 @@ Con el algoritmo utilizado se llego al resultado \texttt{\num{1e-8}} para el \(\
 	\label{fig:funcionderivada2}
 \end{figure}
 
+
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/funcionderivada2zoom.jpg}}
+	\caption{\(f''(x)\), con limites 1 a 100 para poder ver como claramente el 1 es el máximo valor de su imagen.}
+	\label{fig:funcionderivada2zoom}
+\end{figure}
+
 \subsection{Método de trapecios compuestos}
 
 \subsubsection{Truncamiento de n}
@@ -227,7 +259,8 @@ Haciendo los calculos se vió que n es igual a \texttt{241403216}, y luego se de
 Haciendo los calculos se vió que n es igual a \texttt{\num{2.4160e8}}, y luego se decidió truncar el número n a \texttt{5000000} para que sea un cálculo tratable. Para el n truncado la integral dió \texttt{\num{6.9458e+04}}.
 
 \subsection{Condición del problema y término de estabilidad}
-Con el método de perturbaciones experimentales llegamos a un cp respecto de alpha igual a \texttt{28.571} y respecto de beta igual a \texttt{4.9627}. El término de estabilidad es igual a \texttt{1.1201*10^6}
+
+Con el método de perturbaciones experimentales llegamos a un cp respecto de alpha igual a \texttt{28.571} y respecto de beta igual a \texttt{4.9627}. El término de estabilidad es igual a \texttt{\num{1.1201e6}}.
 
 \begin{figure}[H]
 	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/cpsa.jpg}}
@@ -245,31 +278,55 @@ Con el método de perturbaciones experimentales llegamos a un cp respecto de alp
 
 \subsubsection{Error inherente nulo}
 
-\[ Et = Cp * r + Te * \mu_s + Etr \]
+\begin{equation}
+ Et = Cp * r + Te * \mu_s + Etr 
+\end{equation}
 
-\[ Et < 0 + 1.1201*10^6 * 1*10^{-8} + 10^{-5} \]
+\begin{equation}
+ Et < 0 + 1.1201*10^6 * 1*10^{-8} + 10^{-5}
+\end{equation}
 
-\[ Et < 0.011211\]
+\begin{equation}
+ Et < 0.011211
+\end{equation}
 
-\[ Et = Cp * r + Te * \mu_d + Etr \]
+\begin{equation}
+  Et = Cp * r + Te * \mu_d + Etr 
+\end{equation}
 
-\[ Et < 0 + 1.1201*10^6 * 1*10^{-16} + 10^{-5} \]
+\begin{equation}
+    Et < 0 + 1.1201*10^6 * 1*10^{-16} + 10^{-5}
+\end{equation}
 
-\[ Et < 10^{-5}\]
-
+\begin{equation}
+    Et < 10^{-5}
+\end{equation}
+  
 \subsubsection{Error inherente acotado}
 
-\[ Et = Cp * r + Te * \mu_s + Etr \]
+\begin{equation}
+    Et = Cp * r + Te * \mu_s + Etr
+\end{equation}
 
-\[ Et < 0.5*10^{-4} + 1.1201*10^6 * 1*10^{-8} + 10^{-5} \]
+\begin{equation}
+  Et < 0.5*10^{-4} + 1.1201*10^6 * 1*10^{-8} + 10^{-5}
+\end{equation}
 
-\[ Et < 0.011261\]
+\begin{equation}
+    Et < 0.011261
+\end{equation}
 
-\[ Et = Cp * r + Te * \mu_d + Etr \]
+\begin{equation}
+    Et = Cp * r + Te * \mu_d + Etr 
+\end{equation}
 
-\[ Et < 0.5*10^{-4} + 1.1201*10^6 * 1*10^{-16} + 10^{-5} \]
+\begin{equation}
+    Et < 0.5*10^{-4} + 1.1201*10^6 * 1*10^{-16} + 10^{-5}
+\end{equation}
 
-\[ Et < 6*10^{-5}\]
+\begin{equation}
+    Et < 6*10^{-5}
+\end{equation}
 
 \section{Conclusiones}
 
