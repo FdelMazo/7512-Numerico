@@ -247,25 +247,37 @@ Con el método de perturbaciones experimentales llegamos a un cp respecto de alp
 
 \[ Et = Cp * r + Te * \mu_s + Etr \]
 
-\[ Et < 0 + 1.1201*10^6 * 1.0000*10^{-8} + 10^{-5} \]
+\[ Et < 0 + 1.1201*10^6 * 1*10^{-8} + 10^{-5} \]
 
 \[ Et < 0.011211\]
+
+\[ Et = Cp * r + Te * \mu_d + Etr \]
+
+\[ Et < 0 + 1.1201*10^6 * 1*10^{-16} + 10^{-5} \]
+
+\[ Et < 10^{-5}\]
 
 \subsubsection{Error inherente acotado}
 
 \[ Et = Cp * r + Te * \mu_s + Etr \]
 
-\[ Et < 0.5*10^{-4} + 1.1201*10^6 * 1.0000*10^{-8} + 10^{-5} \]
+\[ Et < 0.5*10^{-4} + 1.1201*10^6 * 1*10^{-8} + 10^{-5} \]
 
 \[ Et < 0.011261\]
 
+\[ Et = Cp * r + Te * \mu_d + Etr \]
+
+\[ Et < 0.5*10^{-4} + 1.1201*10^6 * 1*10^{-16} + 10^{-5} \]
+
+\[ Et < 6*10^{-5}\]
+
 \section{Conclusiones}
 
-Por empezar podemos concluir que el problema presentado esta mas cerca de estar bien condicionado (pues la condicion del problema no es tan lejana a 1) de lo que está de ser estable. Esto se debe al enorme valor que toma el termino de estabilidad debido a la gran cantidad de sumas que se realizan. Dichas sumas llevan atadas varios errores de redondeo que terminan 
+Por empezar podemos concluir que el problema presentado esta mas cerca de estar bien condicionado (pues la condicion del problema no es tan lejana a 1) de lo que está de ser estable. Esto se debe al enorme valor que toma el termino de estabilidad debido a la gran cantidad de sumas que se realizan. Dichas sumas llevan atadas varios errores de redondeo que terminan produciendo el error mas importante del algoritmo. Si bien las cotas de error fueron calculadas con un error de maquina single dicho error puede ser acotado con una mejor precision de maquina (double) y llegar a un resultado de menor error. Concluimos que al aumentar la precision el error de redondeo disminuye y por lo tanto la cota de error total tambien lo hace. Distinto es disminuir la cantidad de cuentas a realizar (o dicho de otra forma, disminuir el valor de n) lo cual si bien disminuye el error de redondeo provocaría una mayor cota en el error de truncamiento. Por lo tanto a la hora de realizar calculos numéricos hay que trabajar con la mejor precisión posible siempre que queramos conseguir cotas de error lo mas pequeñas posibles.
 
-Es en este trabajo que se verdaderamente el peso de truncar problemas, y como no debería hacerse levemente. El truncar un problema matemático a un problema numérico no es algo a tomarse a la ligera, y es verdaderamente importante tener un criterio de \textit{como} se hace el truncamiento, y no simplemente arrojar números hasta que sean aproximados. 
+Ahora bien, para un nivel de precisión doble el error de redondeo (al menos para el termino de estabilidad calculado) es basicamente despreciable contra el error de truncamiento. Esto sucede ya que al aumentar la precision, como bien dicho antes, se consiguen mejores cotas de error pues se pierde menos información en cada operación. Esto entonces nos lleva a pensar en que sería lógico buscar conseguir un error de truncamiento aun mas pequeño para que el error de redondeo deje de ser despreciable pero el resultado sea aún mas exacto. Pero esto tiene tambien sus, presentadas anteriormente, desventajas en tanto a tiempo de calculo no manejable. Se podría aumentar el numero de trapecios pero a costa de un tiempo de ejecucion mucho mas elevado y menos manejable. Ahora bien, considerando la cota de error inherente relativo, este error pasa a ser aquel de mayor relevancia pues su magnitud es mayor a la del mismo truncamiento. En este caso no tendría sentido intentar disminuir el error de truncamiento mucho mas pues, si bien no es totalmente despreciable, reducirlo no es rentable considerando la cantidad de tiempo necesario para realizar dichos calculos y tampoco es rentable pues no es siquiera el error mas relevante de todo el calculo.
 
-Por otro lado, y menos viendolo desde el punto de vista numérico y más desde el punto de vista algorítmico,  es sumamente importante ver la diferencia entre un algoritmo estable y uno inestable y aun más importante la diferencia entre la precisión doble y la simple.
+Tambien podemos observar que, si bien el termino de estabilidad es muy grande, la diferencia en las medidas de la integral con precision simple y doble no estuvieron tan alejadas como esperado. Esperabamos que la diferencia fuera mayor pues los redondeos iban a afectar de forma mas directa al resultado teniendo menos precision a la hora de calcular pero evidentemente no fué así en nuestro caso. Pasamos gran parte del tiempo intentando identificar un error en el calculo de la integral en precision single sin poder lograrlo por lo que concluimos que o bien nuestra hipotesis era falsa o bien hay un error algoritmico en el calculo con dicho nivel de precision (el cual lamentablemente Octave no facilita su trabajo). Una pequeña conclusión a la cual llegamos luego de dicho tiempo fue que, logicamente, el termino de estabilidad depende directamente del algoritmo utilizado pues, a la hora de implementar el metodo de los trapecios, siempre realizamos sumas de numeros de magnitudes similares (pues, algoritmicamente hablando, calculamos el area de cada trapecio y los sumamos, en lugar de sumar todas las alturas de dichos trapecios y luego multiplicarlos por sus diminutas bases) y si bien los resultados no fueron tampoco demasiado diferentes, se pudo observar que usando un algoritmo distinto al que propusimos nosotros llevaba a un termino de estabilidad aún mas elevado y por lo tanto un error más elevado.
 
 \newpage
 \appendix
