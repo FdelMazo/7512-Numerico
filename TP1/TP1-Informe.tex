@@ -120,7 +120,7 @@ Para los cálculos del \( \mu \) se utilizó el algoritmo del ejemplo 6.4 del li
 
 Siempre teniendo en cuenta los valores de \(P, \alpha, \beta \) previamente utilizados, definimos la funcion \( f(x) \) como:
 
-\[ f(x) = \frac{\sin{(P x)}  + \beta x^2}{\alpha x} dx \]
+\[ f(x) = \frac{\sin{(P x)}  + \beta x^2}{\alpha x} \]
 
 Graficamos la función para saber un poco más de ella en la figura \ref{fig:funcion}
 
@@ -138,7 +138,7 @@ Sabemos que el error de truncamiento producido por el método de trapecios compu
 
 \[ \epsilon_t = - \frac{{(b - a)}^3}{12 n^2} * f''(\xi) \]
 
-Donde \(b, a\) son los limites de integración y \(n\) es la cantidad de trapecios. Como lo que queremos es acotar el error de truncamiento, debemos evaluar a la segunda derivada en su imagen máxima, es decir \(\xi = 1 \)
+Donde \(b, a\) son los limites de integración y \(n\) es la cantidad de trapecios. Como lo que queremos es acotar el error de truncamiento, debemos evaluar a la segunda derivada en su imagen máxima, es decir \(\xi = 1 \).
 
 Por lo tanto, y ahora con el error de truncamiento al que queremos llegar, despejamos la cantidad de trapecios:
 
@@ -154,9 +154,9 @@ El criterio para truncar n es el de ver como escala el cálculo de la integral r
 
 \subsection{Condición del problema y término de estabilidad}
 
-Para realizar las perturbaciones lo haremos sobre alpha y neta respectivamente, introduciendo un error en un ciclo de 16 iteraciones. Una vez obtenidos distintos resultados y teniendo en cuenta el primer valor obtenido, calculamos la nueva condición del problema, una por iteración. Finalmente, de todos los CP obtenidos, tomamos el mayor, tanto para alpha como para beta y es ese nuestro resultado final.
+Para realizar las perturbaciones lo haremos sobre alpha y beta respectivamente, introduciendo un error en un ciclo de 16 iteraciones. Una vez obtenidos distintos resultados y teniendo en cuenta el primer valor obtenido, calculamos la nueva condición del problema, una por iteración. Finalmente, de todos los CP obtenidos, tomamos el mayor, tanto para alpha como para beta y es ese nuestro resultado final.
 
-Es ahora que, teniendo en cuenta los valores de la integral con precisión simple y precisión doble podemos calcular el valor del término de estabilida. Esto lo hacemos con la siguiente ecuación:
+Es ahora que, teniendo en cuenta los valores de la integral con precisión simple y precisión doble (utilizando el valor de n no truncado, para poder apreciar de manera mas exagerada la inestabilidad del algoritmo) podemos calcular el valor del término de estabilidad. Esto lo hacemos con la siguiente ecuación:
 
 \[ Te = \frac{integral_doble - integral_simple}{integral_doble*\mu_s} \]
 
@@ -180,7 +180,7 @@ Este cálculo lo haremos con dos casos en particular:
 
 \subsection{Fuentes de error}
 
-Se puede ver en ambos casos que la mayor fuente de error es el error de truncamiento, y esto tiene sentido de acuerdo al método empleado, que es el de truncar fuertemente la cantidad de valores a tener en cuenta a la hora de calcular una integral, en vez de calcularla. Es este paso del problema matemático al problema numérico el más importante cambio producido.
+Se puede observar en ambos casos que la mayor fuente de error es el error de redondeo, y esto tiene sentido de acuerdo al método empleado. Al efectuar el metodo de trapecios compuestos se requieren computar muchisimas sumas y multiplicaciones, cada una con sus respectivos errores de redondeo los cuales son variantes en base al error de maquina particular utilizado. Considerando el alto valor de n calculado, la cantidad de sumas es extremadamente grande y por lo tanto el error toma un valor incluso mayor al de truncamiento para dicho n. Todo esto considerando al n original pedido para acotar al error de truncamiento.
 
 \section{Resultados}
 
@@ -247,21 +247,21 @@ Con el método de perturbaciones experimentales llegamos a un cp respecto de alp
 
 \[ Et = Cp * r + Te * \mu_s + Etr \]
 
-\[ Et = 0 + 1.1201*10^6 * 1.0000*10^{-8} + 10^{-5} \]
+\[ Et < 0 + 1.1201*10^6 * 1.0000*10^{-8} + 10^{-5} \]
 
-\[ Et = 0.011211\]
+\[ Et < 0.011211\]
 
 \subsubsection{Error inherente acotado}
 
 \[ Et = Cp * r + Te * \mu_s + Etr \]
 
-\[ Et = 28.571 * 0.5*10^{-4} + 1.1201*10^6 * 1.0000*10^{-8} + 10^{-5} \]
+\[ Et < 0.5*10^{-4} + 1.1201*10^6 * 1.0000*10^{-8} + 10^{-5} \]
 
-\[ Et = 0.012640\]
+\[ Et < 0.011261\]
 
 \section{Conclusiones}
 
-Por empezar podemos concluir que el problema presentado es estable, ya que el CP calculado es menor a la cantidad de variables tenidas en cuenta (alpha y beta).
+Por empezar podemos concluir que el problema presentado esta mas cerca de estar bien condicionado (pues la condicion del problema no es tan lejana a 1) de lo que está de ser estable. Esto se debe al enorme valor que toma el termino de estabilidad debido a la gran cantidad de sumas que se realizan. Dichas sumas llevan atadas varios errores de redondeo que terminan 
 
 Es en este trabajo que se verdaderamente el peso de truncar problemas, y como no debería hacerse levemente. El truncar un problema matemático a un problema numérico no es algo a tomarse a la ligera, y es verdaderamente importante tener un criterio de \textit{como} se hace el truncamiento, y no simplemente arrojar números hasta que sean aproximados. 
 
