@@ -124,29 +124,13 @@ Siempre teniendo en cuenta los valores de \(P, \alpha, \beta \) previamente util
 
 Graficamos la función para saber un poco más de ella en la figura \ref{fig:funcion}
 
-\begin{figure}[H]
-	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/funcion.jpg}}
-	\caption{\(f(x)\)}
-	\label{fig:funcion}
-\end{figure}
+
 
 De esta función calculamos sus derivadas y las graficamos en las figuras \ref{fig:funcionderivada} y \ref{fig:funcionderivada2}, para utilizar en cálculos posteriores.
 
 \[ f'(x) = \frac{P \cos{(P x)}}{\alpha x} - \frac{ \sin{(P x)}}{\alpha x^2} + \frac{\beta}{\alpha} \]
 
-\begin{figure}[H]
-	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/funcionderivada.jpg}}
-	\caption{\(f'(x)\)}
-	\label{fig:funcionderivada}
-\end{figure}
-
 \[ f''(x) = - \frac{2 P \cos{(P x)}}{\alpha x^2} + \frac{2 \sin{(P x)}}{\alpha x^3} - \frac{P^2 \sin{(P x)}}{\alpha x}\]
-
-\begin{figure}[H]
-	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/funcionderivada2.jpg}}
-	\caption{\(f''(x)\)}
-	\label{fig:funcionderivada2}
-\end{figure}
 
 \subsection{Método de trapecios compuestos}
 
@@ -168,13 +152,35 @@ Al despejar por el método de los trapecios compuestos el n necesario para tener
 
 El criterio para truncar n es el de ver como escala el cálculo de la integral respecto del valor, y luego decidir un punto de corte tratable arbitrariamente (en nuestro caso, 5 minutos). Se puede ver en el gráfico \ref{fig:calcularn} que esta es una función lineal, lo cual tiene sentido ya que lo único que adiciona computacionalmente es el ciclo definido \texttt{for} de la función, haciendolo \(\mathcal{O}(n)\), siendo n el mismo n con el que venimos tratando, redundantemente.
 
-\begin{figure}[H]
-	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/calcularn.jpg}}
-	\caption{Calculo de la integral para distintos n en funcion del tiempo}
-	\label{fig:calcularn}
-\end{figure}
-
 \subsection{Condición del problema y término de estabilidad}
+
+Para realizar las perturbaciones lo haremos sobre alpha y neta respectivamente, introduciendo un error en un ciclo de 16 iteraciones. Una vez obtenidos distintos resultados y teniendo en cuenta el primer valor obtenido, calculamos la nueva condición del problema, una por iteración. Finalmente, de todos los CP obtenidos, tomamos el mayor, tanto para alpha como para beta y es ese nuestro resultado final.
+
+Es ahora que, teniendo en cuenta los valores de la integral con precisión simple y precisión doble podemos calcular el valor del término de estabilida. Esto lo hacemos con la siguiente ecuación:
+
+\[ Te = \frac{integral_doble - integral_simple}{integral_doble*\mu_s} \]
+
+Finalmente, se grafica en la figura \ref{fig:cpsa} y la figura \ref{fig:cpsb} el cálculo del Cp respecto de alpha y beta en cada iteración.
+
+
+\subsection{Error total}
+
+Sabiendo que el error total es la sumatoria de los errores inherentes, de redondeo y de truncamiento querémos ahora acotar el error total.
+
+\[ Et = Ei + Er + Etr \]
+
+\[ Et = Cp * r + Te * \mu_s + Etr \]
+
+Este cálculo lo haremos con dos casos en particular:
+
+\begin{itemize}
+\item Error inherente nulo
+\item Error inherente acotado
+\end{itemize}
+
+\subsection{Fuentes de error}
+
+Se puede ver en ambos casos que la mayor fuente de error es el error de truncamiento, y esto tiene sentido de acuerdo al método empleado, que es el de truncar fuertemente la cantidad de valores a tener en cuenta a la hora de calcular una integral, en vez de calcularla. Es este paso del problema matemático al problema numérico el más importante cambio producido.
 
 \section{Resultados}
 
@@ -182,21 +188,90 @@ El criterio para truncar n es el de ver como escala el cálculo de la integral r
 
 Con el algoritmo utilizado se llego al resultado \texttt{\num{1e-8}} para el \(\mu\) de precisión simple y \texttt{\num{1e-16}} para el \(\mu\) de precisión doble.
 
+\subsection{Función y sus derivadas}
+
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/funcion.jpg}}
+	\caption{\(f(x)\)}
+	\label{fig:funcion}
+\end{figure}
+
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/funcionderivada.jpg}}
+	\caption{\(f'(x)\)}
+	\label{fig:funcionderivada}
+\end{figure}
+
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/funcionderivada2.jpg}}
+	\caption{\(f''(x)\)}
+	\label{fig:funcionderivada2}
+\end{figure}
+
 \subsection{Método de trapecios compuestos}
+
+\subsubsection{Truncamiento de n}
+
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/calcularn.jpg}}
+	\caption{Calculo de la integral para distintos n en funcion del tiempo}
+	\label{fig:calcularn}
+\end{figure}
 
 \subsubsection{Precisión simple}
 
-Haciendo los calculos se vió que n es igual a \texttt{\num{2.4160e8}}, y luego se decidió truncar el número n a \texttt{5000000} para que sea un cálculo tratable. Para el n original la integral dió como resultado \texttt{\num{6.9458e+04}}, mientras que para n truncado dió
+Haciendo los calculos se vió que n es igual a \texttt{241403216}, y luego se decidió truncar el número n a \texttt{5000000}. Para el n original la integral dió como resultado \texttt{\num{6.9458e+04}}, mientras que para n truncado dió \texttt{\num{6.9351e+04}}.
 
 \subsubsection{Precisión doble}
 
-Haciendo los calculos se vió que n es igual a \texttt{241403216}, y luego se decidió truncar el número n a \texttt{5000000}. Para el n original la integral dió como resultado \texttt{\num{6.9458e+04}}, mientras que para n truncado dió
+Haciendo los calculos se vió que n es igual a \texttt{\num{2.4160e8}}, y luego se decidió truncar el número n a \texttt{5000000} para que sea un cálculo tratable. Para el n truncado la integral dió \texttt{\num{6.9458e+04}}.
+
+\subsection{Condición del problema y término de estabilidad}
+Con el método de perturbaciones experimentales llegamos a un cp respecto de alpha igual a \texttt{28.571} y respecto de beta igual a \texttt{4.9627}. El término de estabilidad es igual a \texttt{0.011211}
+
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/cpsa.jpg}}
+	\caption{Cp respecto de alpha por iteración}
+	\label{fig:cpsa}
+\end{figure}
+
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/cpsb.jpg}}
+	\caption{Cp respecto de beta por iteración}
+	\label{fig:cpsb}
+\end{figure}
+
+\subsection{Error total}
+
+\subsubsection{Error inherente nulo}
+
+\[ Et = Cp * r + Te * \mu_s + Etr \]
+
+\[ Et = 0 + 1.1201*10^6 * 1.0000*10^{-8} + 10^{-5} \]
+
+\[ Et = 0.011211\]
+
+\subsubsection{Error inherente acotado}
+
+\[ Et = Cp * r + Te * \mu_s + Etr \]
+
+\[ Et = 28.571 * 0.5*10^{-4} + 1.1201*10^6 * 1.0000*10^{-8} + 10^{-5} \]
+
+\[ Et = 0.012640\]
 
 \section{Conclusiones}
+
+Por empezar podemos concluir que el problema presentado es estable, ya que el CP calculado es menor a la cantidad de variables tenidas en cuenta (alpha y beta).
+
+Es en este trabajo que se verdaderamente el peso de truncar problemas, y como no debería hacerse levemente. El truncar un problema matemático a un problema numérico no es algo a tomarse a la ligera, y es verdaderamente importante tener un criterio de \textit{como} se hace el truncamiento, y no simplemente arrojar números hasta que sean aproximados. 
+
+Por otro lado, y menos viendolo desde el punto de vista numérico y más desde el punto de vista algorítmico,  es sumamente importante ver la diferencia entre un algoritmo estable y uno inestable y aun más importante la diferencia entre la precisión doble y la simple.
 
 \newpage
 \appendix
 \section{Anexo I: Código Fuente}
+
+El programa utilizado es GNU Octave, versión 4.2.2 y se procuró utilizar sintaxis compatible con Matlab, teniendo como única excepción la función \texttt{fplot} que brinda Octave para graficar funciones, despues de consultar con los docentes.
 
 \lstinputlisting[language=Octave,title=\texttt{mu.m}]{src/mu.m}
 
@@ -204,7 +279,7 @@ Haciendo los calculos se vió que n es igual a \texttt{241403216}, y luego se de
 \lstinputlisting[language=Octave,title=\texttt{main.m}]{src/main.m}
 
 \newpage
-\lstinputlisting[language=Octave,title=\texttt{singlemain.m}]{src/singlemain.m}
+\lstinputlisting[language=Octave,title=\texttt{mainsingle.m}]{src/mainsingle.m}
 
 \newpage
 \begin{lstlisting}[language=Octave,title=Generación de graficos]
@@ -215,49 +290,50 @@ fplot(@fderivada2, [-0.02 0.02])
 
 \begin{lstlisting}[language=Octave,title=Truncamiento y gráfico de n]
 function y = graficar_n()
-x = [1,10,100,1000,10000,100000,1000000,10000000];
-y = [];
-for n = x
-    n
-    tic;
-    integral = calcular_area(n)
-    y = [y,toc]; 
-    printf("Tiempo = %ds\n\n",y(length(y)))   
-end
-plot(x,y,'o-r')
+    x = [1,10,100,1000,10000,100000,1000000,10000000];
+    y = [];
+    for n = x
+        n
+        tic;
+        integral = calcular_area(n)
+        y = [y,toc]; 
+        printf("Tiempo = %ds\n\n",y(length(y)))   
+    end
+    plot(x,y,'o-r')
 end
 \end{lstlisting}
 
 \newpage
 \section{Anexo II: Resultados Numéricos}
 
-\begin{lstlisting}[language=Octave,title=Resultados de \texttt{mu.m}]
+\begin{lstlisting}[language=Octave,title=Corrida de \texttt{mu.m}]
 >> mu
 mu_simple =    1.0000e-08
 mu_doble =    1.0000e-16
 \end{lstlisting}
 
-\begin{lstlisting}[language=Octave,title=Resultados originales sin truncamiento de n]
+\begin{lstlisting}[language=Octave,title=title=Corrida de \texttt{main.m} con n original]
 >> main
 n =    2.4160e+08
 Elapsed time is 12404.8 seconds.
 ans =    6.9458e+04
 \end{lstlisting}
 
-\begin{lstlisting}[language=Octave,title=n con precisión simple]
->> main
-n = 241403216
+\begin{lstlisting}[language=Octave,title=title=Corrida de \texttt{main.m}]
+\begin{lstlisting}[language=Octave,title=Corrida de \texttt{mu.m}]
+n_sin_truncar =    2.4160e+08
+n =  5000000
+integral =    6.9458e+04  
+cpa =  28.571
+cpb =  4.9627
+te =    1.1201e+06
 \end{lstlisting}
 
-\begin{lstlisting}[language=Octave,title=Resultados con truncamiento de n]
->> main
+\begin{lstlisting}[language=Octave,title=title=Corrida de \texttt{mainsingle.m}]
+>> mainsingle
+n_sin_truncar =  241403216
 n =  5000000
-integral =    6.9458e+04
-Elapsed time is 360.336 seconds.
->> singlemain
-n =  5000000
-integral =    7.0236e+04
-Elapsed time is 450.23 seconds.
+integral =    6.9351e+04
 \end{lstlisting}
 
 \begin{lstlisting}[language=Octave,title=Cálculos hechos para el criterio de truncamiento de n]
@@ -295,6 +371,30 @@ integral =    6.9458e+04
 Tiempo = 599.773s
 \end{lstlisting}
 
+
+\begin{lstlisting}[language=Octave,title=Cps calculados para las distintas iteraciones]
+cps_a =
+
+Columns 1 through 11:
+
+    28.571   12.500   11.834   11.772   11.765   11.765   11.765   11.765   11.765   11.765   11.765
+
+Columns 12 through 16:
+
+    11.765   11.768   11.857   12.212   11.102
+
+cps_b =
+
+Columns 1 through 11:
+
+    3.9212   4.7614   4.8657   4.8763   4.8774   4.8775   4.8775   4.8775   4.8775   4.8775   4.8776
+
+Columns 12 through 16:
+
+4.8770   4.8683   4.7962   4.7740   4.4409
+\end{lstlisting}
+
+
 \newpage
 
 \phantomsection 
@@ -309,4 +409,3 @@ Buenos Aires: Nueva Librería, 2002.
 
 \end{thebibliography}
 \end{document}
-

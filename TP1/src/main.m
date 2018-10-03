@@ -6,7 +6,7 @@ function integral = main
   global ERR_MAX = 10e-5;
   
   n_sin_truncar = calcular_n(ERR_MAX)
-  n = 5000 
+  n = 5000
   integral = calcular_area(n)
   cps = calcular_cps(n);
   cpa = cps(1), cpb = cps(2)
@@ -50,6 +50,10 @@ function cps = calcular_cps(n)
     cps_a = [cps_a, perturbarA(perturbacion,n)];
     cps_b = [cps_b, perturbarB(perturbacion,n)];
    end
+   cps_a
+   cps_b
+   #plot(1:16,cps_a,'o-r')
+   #plot(1:16,cps_b,'o-r')
    cpa = max(cps_a);
    cpb = max(cps_b);
    cps = [cpa,cpb];

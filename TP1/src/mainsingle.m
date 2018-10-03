@@ -6,7 +6,7 @@ function integral = mainsingle
   global ERR_MAX = single(10e-5);
   
   n_sin_truncar = calcular_n(ERR_MAX)
-  n = single(5000)
+  n = single(5000000)
   integral = calcular_area(n)
 end
 

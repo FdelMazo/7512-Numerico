@@ -1,0 +1,7 @@
+Se encuentran 3 archivos en el directorio y los tres pueden ser corridos de manera independiente.
+
+* main.m contiene el programa principal, con precisión doble.
+
+* mainsingle.m contiene una copia del programa pero con precisión simple.
+
+* mu.m contiene el algoritmo para calcular ambos mu.
