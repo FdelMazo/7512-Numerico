@@ -279,6 +279,7 @@ Con el método de perturbaciones experimentales llegamos a un cp respecto de alp
 \subsubsection{Error inherente nulo}
 
 \begin{equation}
+\label{errortotal}
  Et = Cp * r + Te * \mu_s + Etr 
 \end{equation}
 
@@ -463,6 +464,23 @@ Columns 12 through 16:
 4.8770   4.8683   4.7962   4.7740   4.4409
 \end{lstlisting}
 
+
+\newpage
+\section{Anexo III: Re-Entrega}
+
+Se corre el programa nuevamente, buscando calcular el término de estabilidad y el error de redondeo, pero sin truncamiento de n.
+
+
+\begin{lstlisting}[language=Octave,title=Corrida entera sin truncamiento]
+>> main
+integral =  69457.61896
+te =  76411515.04281
+error_redondeo =  0.76412
+>> mainsingle
+integral =  16384
+\end{lstlisting}
+
+Para precision simple, el error total queda acotado por \texttt{0.76412} segun la formula \ref{errortotal} en ambos casos del enunciado. Para precision doble el cambio es despreciable en ambos casos con respecto a los demas errores.
 
 \newpage
 
