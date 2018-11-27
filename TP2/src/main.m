@@ -28,15 +28,18 @@ function test = main
   rk = conveccion_rk(velocidad0, cadencia, masa);
   
   plotear_temps(tiempo, euler, rk, exactos);
-  plotear_errores(tiempo, euler, rk, exactos);
+  #plotear_errores(tiempo, euler, rk, exactos);
 endfunction
 
 function void = plotear_errores(t, euler, rk, exactos)
   error_euler = calcular_error(t, exactos, euler);
   error_runge = calcular_error(t, exactos, rk);
-  plot(t, error_euler)
+  plot(t ./ 60, error_euler)
+  title("e(t)")
+  xlabel("t(m)")
+  ylabel("error")
   hold on
-  plot(t, error_runge)
+  plot(t ./ 60, error_runge)
   hold off
 endfunction
 
