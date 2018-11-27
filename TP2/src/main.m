@@ -21,19 +21,19 @@ function test = main
   termino2 = 1 - diametro_interno/diametro_externo;
   masa = termino1 * termino2;
   
-  tiempo = 0:cadencia:LARGO_HORNO/velocidad0
+  tiempo = 0:cadencia:LARGO_HORNO/velocidad0;
   
-  exactos = metodo_exacto(tiempo, masa)
-  euler = metodo_euler(velocidad0, cadencia, masa)
+  exactos = metodo_exacto(tiempo, masa);
+  euler = metodo_euler(velocidad0, cadencia, masa);
   rk = conveccion_rk(velocidad0, cadencia, masa);
   
   plotear_temps(tiempo, euler, rk, exactos);
-  #plotear_errores(tiempo, euler, rk, exactos);
+  plotear_errores(tiempo, euler, rk, exactos);
 endfunction
 
 function void = plotear_errores(t, euler, rk, exactos)
-  error_euler = calcular_error(t, exactos, euler);
-  error_runge = calcular_error(t, exactos, rk);
+  error_euler = calcular_error(t, exactos, euler)
+  error_runge = calcular_error(t, exactos, rk)
   plot(t ./ 60, error_euler)
   title("e(t)")
   xlabel("t(m)")
@@ -45,6 +45,8 @@ endfunction
 
 function error = calcular_error(t, exactos, otro)
   e = [];
+  exactos = exactos .- 273;
+  otro = otro .- 273;
   err = 0;
   for i = 1:columns(exactos);
     e = [e err];
