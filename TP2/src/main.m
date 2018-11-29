@@ -7,8 +7,8 @@ function test = main
   global LARGO_TUBO = 12;
   global LARGO_HORNO = 50;
   global NBOL = 50;
-  global temperatura1 = round( 473 / 10000 * (padron - 90000) + 773 );
-  global temperatura2 = round( 473 / 10000 * (padron - 90000) + 773 );
+  temperatura1 = round( 473 / 10000 * (padron - 90000) + 773 );
+  temperatura2 = round( 473 / 10000 * (padron - 90000) + 773 );
   global HC = 20;
   global SIGMA = 5.6703*10^-8;
   global EPSILON = 0.85;
@@ -20,37 +20,131 @@ function test = main
   termino1 = DENSIDAD * PI * diametro_externo * diametro_interno * LARGO_TUBO;
   termino2 = 1 - diametro_interno/diametro_externo;
   masa = termino1 * termino2;
+  fin = LARGO_HORNO/velocidad0;
   
   tiempo = 0:cadencia:LARGO_HORNO/velocidad0;
   
-  exactos = metodo_exacto(tiempo, masa);
-  euler = metodo_euler(velocidad0, cadencia, masa);
-  rk = conveccion_rk(velocidad0, cadencia, masa);
+  # Calculo de ED
+  exactos = metodo_exacto(tiempo, masa, temperatura1);
+  euler = metodo_euler(velocidad0, cadencia, masa, temperatura1);
+  rk = conveccion_rk(velocidad0, cadencia, masa, temperatura1);
   
-  plotear_temps(tiempo, euler, rk, exactos);
-  plotear_errores(tiempo, euler, rk, exactos);
+  # Grafico de errores y metodos Euler / RK4
+  #plotear_temps(tiempo, euler, rk, exactos);
+  #plotear_errores(tiempo, euler, rk, exactos);
+  
+  # Comparacion radiacion y conveccion
+  r_rk4 = conveccion_radacion_rk(fin, cadencia, masa, temperatura1, t0);
+  r_rk4 = r_rk4.-273;
+  #plotear_comparacion(tiempo, r_rk4, rk) 
+  
+  # Soaking
+  sk = calcular_indice_soaking(r_rk4);
+  tiempo_soaking = (fin - tiempo(sk)) / 60
+  temp_soaking = calcular_temp_soaking(r_rk4, sk)
+  
+  # Tanteo
+  t1 = 1318.2;
+  t2 = 1193.5;
+  rk = rk_dividido(fin, cadencia, masa, t1, t2, t0);
+  rk = rk.-273;
+  sk = calcular_indice_soaking(rk);
+  temp_soaking = calcular_temp_soaking(rk, sk)
+  tiempo_soaking = (fin - tiempo(sk)) /60
+  
+  # Calculo automatico
+  jacobiano = inv([0.75, 0.25 ; 0.25 , 0.75 ]);
+  err = [];
+  soak = [];
+  iter = [];
+  tsk_obj = 855;
+  tisk_obj = 10;
+  v0 = [tsk_obj; tsk_obj] # Semilla
+  err_individual = 1;
+  i = 0;
+  while err_individual > 0.5*10^-3;
+    v1 = punto_fijo(fin, cadencia, masa, jacobiano, v0, tisk_obj, tsk_obj, tiempo);
+    soak = [soak v1];
+    iter = [iter i];
+    res_err = [(v1(1) - v0(1)) / v1(1); (v1(2) - v0(2)) / v1(2)];
+    err_individual = norm(res_err, 1)
+    err = [err err_individual];
+    v0 = v1;
+    i+=1;
+  endwhile
+  v1 = v1
+  i = i
+endfunction
+
+function temps = punto_fijo(fin, h, masa, jacobiano, temperaturas, tiemsk, tempsk, tiempo)
+  rk = rk_dividido(fin, h, masa, temperaturas(1) + 273, temperaturas(2) + 273);
+  rk = rk.-273;
+  sk = calcular_indice_soaking(rk);
+  temp_soaking = calcular_temp_soaking(rk, sk) - 273;
+  tiempo_soaking = (fin - tiempo(sk)) / 60;
+  v = [tiempo_soaking - tiemsk; temp_soaking - tempsk];
+  temps = temperaturas - jacobiano * v;
+endfunction
+
+function rk = rk_dividido(fin, h, masa, t1, t2)
+  v = conveccion_radacion_rk(fin/2, h, masa, t1, 273);
+  len = columns(v);
+  rk = [v conveccion_radacion_rk(fin/2, h, masa, t2, v(len))];  
+endfunction
+
+function void = plotear_comparacion(tiempo, r_rk4, rk)
+  plot(tiempo./60, r_rk4)
+  hold on
+  title("T(t)")
+  xlabel("t(m)")
+  ylabel("T(C°)")
+  legend("Radiacion + Conveccion")
+  plot(tiempo./60, rk.-273)
+  hold off
+endfunction
+  
+function indice_soaking = calcular_indice_soaking(r_rk4)
+  len = columns(r_rk4);
+  sk = 0;
+  for i = 1:columns(r_rk4);
+        if ((r_rk4(len) - r_rk4(i)) > 10)
+          sk = i+1;
+        endif
+  endfor
+  indice_soaking = sk;
+endfunction
+
+function temp_soaking = calcular_temp_soaking(r_rk4, sk)
+  temp_soaking = 0;
+  for i = sk:columns(r_rk4)
+    temp_soaking += r_rk4(i);
+  endfor
+  temp_soaking = temp_soaking / (columns(r_rk4) - sk + 1);
+  
 endfunction
 
 function void = plotear_errores(t, euler, rk, exactos)
-  error_euler = calcular_error(t, exactos, euler)
-  error_runge = calcular_error(t, exactos, rk)
-  plot(t ./ 60, error_euler)
+  error_euler = calcular_error(exactos, euler);
+  error_runge = calcular_error(exactos, rk);
+  stem(t ./ 60, log10(error_euler))
   title("e(t)")
   xlabel("t(m)")
   ylabel("error")
+  legend("Error Euler")
   hold on
-  plot(t ./ 60, error_runge)
+  stem(t ./ 60, log10(error_runge))
   hold off
 endfunction
 
-function error = calcular_error(t, exactos, otro)
+function error = calcular_error(exactos, otro)
   e = [];
   exactos = exactos .- 273;
   otro = otro .- 273;
   err = 0;
   for i = 1:columns(exactos);
+    err = err / exactos(i);
     e = [e err];
-    err += abs(exactos(i) - otro(i));
+    err = exactos(i) - otro(i);
   endfor
   error = e;
 endfunction
@@ -67,57 +161,83 @@ function void = plotear_temps(t, euler, rk, exactas)
   hold off
 endfunction
   
- function temperaturas = metodo_euler(velocidad0, cadencia, masa)
+ function temperaturas = metodo_euler(velocidad0, cadencia, masa, tinf)
   global LARGO_HORNO
   temp = 293;
   fin = LARGO_HORNO/velocidad0;
   v = [];
   for t = cadencia:cadencia:fin;
     v = [v temp];
-    temp += cadencia*conveccion_diferencial(temp, masa);
+    temp += cadencia*conveccion_diferencial(temp, masa, tinf);
   endfor
   temperaturas = [v temp];
 endfunction
 
-function cc = conveccion_diferencial(temp, masa)
-  global temperatura1 HC CALOR_ESPECIFICO S
-  termino1 = temp - temperatura1;
+function cc = conveccion_diferencial(temp, masa, tinf)
+  global HC CALOR_ESPECIFICO S
+  termino1 = temp - tinf;
   termino2 = -masa * CALOR_ESPECIFICO;
   cc = HC * S * termino1 / termino2;
 endfunction
 
-function exactas = metodo_exacto(t, masa)
+function exactas = metodo_exacto(t, masa, tinf)
   for tiempo = t;
-    valor = conveccion_exacta(t,masa);
+    valor = conveccion_exacta(t,masa, tinf);
   endfor
   exactas = valor;
 endfunction
 
-function cc = conveccion_exacta(t, masa)
-  global temperatura1 HC t0 CALOR_ESPECIFICO S
+function cc = conveccion_exacta(t, masa, tinf)
+  global HC t0 CALOR_ESPECIFICO S
   termino1 = -HC*S*t;
   termino2 = masa * CALOR_ESPECIFICO;
   exponente = termino1/termino2;
   a = exp(termino1/termino2);
-  cc = temperatura1 + (t0 - temperatura1)*exp(exponente);
+  cc = tinf + (t0 - tinf)*exp(exponente);
 endfunction
 
-function rk = conveccion_rk(velocidad0, cadencia, masa)
+function rk = conveccion_rk(velocidad0, cadencia, masa, tinf)
 global LARGO_HORNO
   temp = 293;
   fin = LARGO_HORNO/velocidad0;
   v = [];
   for t = cadencia:cadencia:fin;
     v = [v temp];
-    temp += (cadencia/6)*rk4(temp, masa, cadencia);
+    temp += (cadencia/6)*rk4(temp, masa, cadencia, tinf);
   endfor
   rk = [v temp];
 endfunction
 
-function k = rk4(temp, masa, h)
-  k1 = conveccion_diferencial(temp, masa);
-  k2 = conveccion_diferencial(temp + h/2, masa);
-  k3 = conveccion_diferencial(temp + h/2, masa);
-  k4 = conveccion_diferencial(temp + h, masa);
+function k = rk4(temp, masa, h, tinf)
+  k1 = conveccion_diferencial(temp, masa, tinf);
+  k2 = conveccion_diferencial(temp + h/2, masa, tinf);
+  k3 = conveccion_diferencial(temp + h/2, masa, tinf);
+  k4 = conveccion_diferencial(temp + h, masa, tinf);
   k = k1 + 2*k2 + 2*k3 + k4;
+endfunction
+
+function rk = conveccion_radacion_rk(fin, cadencia, masa, tinf, t0)
+  v = [];
+  temp = t0;
+  for t = cadencia:cadencia:fin;
+    v = [v temp];
+    temp += (cadencia/6)*r_rk4(temp, masa, cadencia, tinf);
+  endfor
+  rk = [v temp];
+endfunction
+
+function k = r_rk4(temp, masa, h, tinf)
+  k1 = conveccion_radacion(temp, masa, tinf);
+  k2 = conveccion_radacion(temp + h/2, masa, tinf);
+  k3 = conveccion_radacion(temp + h/2, masa, tinf);
+  k4 = conveccion_radacion(temp + h, masa, tinf);
+  k = k1 + 2*k2 + 2*k3 + k4;
+endfunction
+
+function cc = conveccion_radacion(temp, masa, tinf)
+  global SIGMA EPSILON CALOR_ESPECIFICO S
+  divisor = - masa * CALOR_ESPECIFICO;
+  numerador = SIGMA * EPSILON * S * (temp^4 - tinf^4);
+  radiacion = numerador / divisor;
+  cc = conveccion_diferencial(temp, masa, tinf) + radiacion;
 endfunction
