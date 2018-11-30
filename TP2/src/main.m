@@ -7,7 +7,7 @@ function test = main
   global LARGO_TUBO = 12;
   global LARGO_HORNO = 50;
   global NBOL = 50;
-  temperatura1 = round( 200 / 10000 * (padron - 90000) + 500 )
+  temperatura1 = round( 200 / 10000 * (padron - 90000) + 500 );
   temperatura2 = round( 200 / 10000 * (padron - 90000) + 500 );
   temperatura1 = temperatura1 + 273;
   temperatura2 = temperatura2 + 273;
@@ -32,18 +32,20 @@ function test = main
   rk = conveccion_rk(velocidad0, cadencia, masa, temperatura1);
   
   # Grafico de errores y metodos Euler / RK4
-  #plotear_temps(tiempo, euler, rk, exactos);
-  #plotear_errores(tiempo, euler, rk, exactos);
+  plotear_temps(tiempo, euler, rk, exactos);
+  plotear_errores(tiempo, euler, rk, exactos);
   
   # Comparacion radiacion y conveccion
   r_rk4 = conveccion_radacion_rk(fin, cadencia, masa, temperatura1, t0);
   r_rk4 = r_rk4.-273;
-  #plotear_comparacion(tiempo, r_rk4, rk) 
+  plotear_comparacion(tiempo, r_rk4, rk) 
   
   # Soaking
   sk = calcular_indice_soaking(r_rk4);
   tiempo_soaking = (fin - tiempo(sk)) / 60;
-  temp_soaking = calcular_temp_soaking(r_rk4, sk)
+  temp_soaking = calcular_temp_soaking(r_rk4, sk);
+  printf("El tiempo de soaking para T1 = %d °C y T2 = %d °C es:\n%d minutos\n\n", temperatura1, temperatura2, tiempo_soaking);
+  printf("Su temperatura de soaking es:\n%d °C\n\n", temp_soaking);
   
   # Tanteo
   t1 = 780;
@@ -51,24 +53,31 @@ function test = main
   rk = rk_dividido(fin, cadencia, masa, t1+273, t2+273, t0);
   rk = rk.-273;
   sk = calcular_indice_soaking(rk);
-  temp_soaking = calcular_temp_soaking(rk, sk)
-  tiempo_soaking = (fin - tiempo(sk)) /60
+  temp_soaking = calcular_temp_soaking(rk, sk);
+  tiempo_soaking = (fin - tiempo(sk)) /60;
+  printf("Se tantearon valores hasta llegar a T1 = %d y T2 = %d para conseguir un tiempo de soaking de 10 minutos\n", t1, t2);
   
   # Calculo automatico
   jacobiano = inv([0.75, 0.25 ; 0.25 , 0.75 ]);
-  tsk_obj1 = round( 100 / 10000 * (padron - 90000) + 550 )
-  tsk_obj2 = round( 100 / 10000 * (padron - 90000) + 600 )
-  A = [tsk_obj2;tsk_obj2]
+  tsk_obj1 = round( 100 / 10000 * (padron - 90000) + 550 );
+  tsk_obj2 = round( 100 / 10000 * (padron - 90000) + 600 );
   tisk_obj = 10;
-  tempsA = obtener_temps(fin, cadencia, masa, jacobiano, [667.45;667.45], tisk_obj, 667.45, tiempo)
-  tempsB = obtener_temps(fin, cadencia, masa, jacobiano, [tsk_obj1;tsk_obj1], tisk_obj, tsk_obj1, tiempo)
-  tempsC = obtener_temps(fin, cadencia, masa, jacobiano, [tsk_obj2;tsk_obj2], tisk_obj, tsk_obj2, tiempo)
+  tempsA = obtener_temps(fin, cadencia, masa, jacobiano, [667.45;667.45], tisk_obj, 667.45, tiempo);
+  tempsB = obtener_temps(fin, cadencia, masa, jacobiano, [tsk_obj1;tsk_obj1], tisk_obj, tsk_obj1, tiempo);
+  tempsC = obtener_temps(fin, cadencia, masa, jacobiano, [tsk_obj2;tsk_obj2], tisk_obj, tsk_obj2, tiempo);
   rkA = rk_dividido(fin, cadencia, masa, tempsA(1)+273, tempsA(2)+273, t0);
   rkB = rk_dividido(fin, cadencia, masa, tempsB(1)+273, tempsB(2)+273, t0);
   rkC = rk_dividido(fin, cadencia, masa, tempsC(1)+273, tempsC(2)+273, t0);
+  printf("\nCalculos automaticos (10 minutos de soaking para todas):\n\n")
+  printf("Las temperaturas de inicio para una temperatura de soaking de %d °C son:\n", temp_soaking);
+  printf("T1 = %d °C\nT2 = %d °C\n\n", tempsA(1), tempsA(2));  
+  printf("Las temperaturas de inicio para una temperatura de soaking de %d °C son:\n", tsk_obj1);
+  printf("T1 = %d °C\nT2 = %d °C\n\n", tempsB(1), tempsB(2));
+  printf("Las temperaturas de inicio para una temperatura de soaking de %d °C son:\n", tsk_obj2);
+  printf("T1 = %d °C\nT2 = %d °C\n\n", tempsC(1), tempsC(2));
   
-  #plot(tiempo./60, rkA.-273)
-  #plot(tiempo./60, rkB.-273)
+  plot(tiempo./60, rkA.-273)
+  plot(tiempo./60, rkB.-273)
   plot(tiempo./60, rkC.-273)
   title("T(t)")
   xlabel("t(m)")
@@ -88,7 +97,7 @@ function temps = obtener_temps(fin, cadencia, masa, jacobiano, v0, tisk_obj, tsk
       break
     endif
   endwhile
-  i = i
+  i = i;
   temps = v1;
 endfunction
 
@@ -177,8 +186,8 @@ function void = plotear_temps(t, euler, rk, exactas)
   ylabel("T(C)")
   legend(ex, "Valor exacto")
   hold on
-  eu = plot(t, euler .- 273)
-  rk = plot(t, rk .-273)
+  eu = plot(t, euler .- 273);
+  rk = plot(t, rk .-273);
   hold off
 endfunction
   
