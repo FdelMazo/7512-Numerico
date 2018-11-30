@@ -72,7 +72,7 @@ function test = main
   plot(tiempo./60, rkC.-273)
   title("T(t)")
   xlabel("t(m)")
-  ylabel("T(C°)")
+  ylabel("T(C)")
 endfunction
 
 function temps = obtener_temps(fin, cadencia, masa, jacobiano, v0, tisk_obj, tsk_obj, tiempo)
@@ -117,7 +117,7 @@ function void = plotear_comparacion(tiempo, r_rk4, rk)
   hold on
   title("T(t)")
   xlabel("t(m)")
-  ylabel("T(C°)")
+  ylabel("T(C)")
   legend("Radiacion + Conveccion")
   plot(tiempo./60, rk.-273)
   hold off
@@ -174,7 +174,7 @@ function void = plotear_temps(t, euler, rk, exactas)
   ex = plot(t, exactas .- 273);
   title("T(t)")
   xlabel("t(m)")
-  ylabel("T(C°)")
+  ylabel("T(C)")
   legend(ex, "Valor exacto")
   hold on
   eu = plot(t, euler .- 273)

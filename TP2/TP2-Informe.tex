@@ -2,7 +2,7 @@
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
-\usepackage{commath,amsmath,lastpage,float,sectsty,hyperref,graphicx,pdfpages,fancyhdr,listings,siunitx}
+\usepackage{commath,amsmath,lastpage,float,sectsty,hyperref,graphicx,pdfpages,fancyhdr,listings,siunitx,gensymb}
 
 \sectionfont{\fontsize{12}{15}\selectfont}
 \linespread{1.25} % Interlineado 1.5
@@ -120,15 +120,33 @@ Usando la formula del calculo de errores relativos fue sencillo obtener el error
 
 Con RK4 determinado como el algoritmo más exacto se resolvera mediante dicho metodo la ecuacion diferencial completa. En este caso no hay una función exacta para comparar y observar el error pero determinamos que RK4 es mas preciso que Euler.
 
-A modo de comparación se usará la función calculada previamente con unicamente la conveccion y se observa que el intercambio por radiacion es claramente significativo en la figura \ref{fig:comparacion}
+A modo de comparación se usará la función calculada previamente con unicamente la conveccion y se observa que el intercambio por radiacion es claramente significativo en la figura \ref{fig:comp}
 
 \subsection{Temperatura y tiempo de soaking}
 
-Dado que tanto la temperatura como el tiempo de soaking son valores muy importantes para este proceso fueron calculados para los valores iniciales de temperatura. Con el horno a temperatura constante a 696°C. Para obtener este valor de tiempo se busco el punto donde la temperatura alcanzada es de 10°C menor a la final. Para alcanzar la temperatura de soaking se busco el promedio de temperatura durante ese intervalo de tiempo.
+Dado que tanto la temperatura como el tiempo de soaking son valores muy importantes para este proceso fueron calculados para los valores iniciales de temperatura. Con el horno a temperatura constante a 696 \degree C. Para obtener este valor de tiempo se busco el punto donde la temperatura alcanzada es de 10 \degree C menor a la final. Para alcanzar la temperatura de soaking se busco el promedio de temperatura durante ese intervalo de tiempo.
 
-Luego se variaron las temperaturas para alcanzar un tiempo de soaking menor. Con el tiempo de soaking a 10 minutos fijo, se variaron las temperaturas manualmente hasta llegar a dicho tiempo y luego se planteo un sistema de ecuaciones no lineales el cual fue resuelto con el metodo de punto fijo para obtener un resultado más preciso. Se utilizaron 2 cifras decimales como condicion de corte pues el problema, por algun motivo desconocido, no lograba a conseguir errores menores para valores de temperatura menores a los 800 °C.
+Luego se variaron las temperaturas para alcanzar un tiempo de soaking menor. Con el tiempo de soaking a 10 minutos fijo, se variaron las temperaturas manualmente hasta llegar a dicho tiempo y luego se planteo un sistema de ecuaciones no lineales el cual fue resuelto con el metodo de punto fijo para obtener un resultado más preciso. Se utilizaron 2 cifras decimales como condicion de corte pues el problema, por algun motivo desconocido, no lograba a conseguir errores menores para valores de temperatura menores a los 800  \degree C.
 
-Finalmente se tomaron 3 temperaturas (696°C, 648°C y 698°C) y se resolvio el sistema, graficando la evolucion de la temperatura en las figuras \ref{fig:A}, \ref{fig:B} y \ref{fig:C} respectivamente.
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/A.jpg}}
+	\caption{Evolución de 696\degree C}
+    \label{fig:A}
+\end{figure}
+
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/B.jpg}}
+	\caption{Evolución de 648\degree C}
+    \label{fig:B}
+\end{figure}
+
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/C.jpg}}
+    \caption{Evolución de 698\degree C}
+	\label{fig:C}
+\end{figure}
+
+Finalmente se tomaron 3 temperaturas (696 \degree C, 648 \degree C y 698 \degree C) y se resolvio el sistema, graficando la evolucion de la temperatura en las figuras \ref{fig:A}, \ref{fig:B} y \ref{fig:C} respectivamente.
 
 \section{Resultados}
 
@@ -136,16 +154,30 @@ Finalmente se tomaron 3 temperaturas (696°C, 648°C y 698°C) y se resolvio el 
 
 Utilizando ambos metodos de resolucion de ecuaciones diferenciales se llegaron a los siguientes resultados para calor por conveccion unicamente:
 
-[ACA VAN LAS FIGURAS METODOS Y ERRORES]
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/metodos.jpg}}
+	\caption{Cp respecto de beta por iteración}
+	\label{fig:metodos}
+\end{figure}
+
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/errores.jpg}}
+	\caption{Errores}
+	\label{fig:errores}
+\end{figure}
 
 Utilizando el metodo de RK4 se llego a la siguiente grafica comparativa para el calor por conveccion y radiacion:
 
-[ACA VA LA FIGURA COMPARACION]
+\begin{figure}[H]
+	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/comparacion.jpg}}
+	\caption{Comparación}
+	\label{fig:comp}
+\end{figure}
 
 Se obtuvieron:
 
-tiempo_soaking =  2.0833
-temp_soaking =  667.45
+tiempo\_soaking =  2.0833
+temp\_soaking =  667.45
 
 Y mediante el tanteo se aumento el tiempo de soaking a 10 minutos con los valores de temperatura:
 
@@ -178,146 +210,13 @@ Se podría aumentar la cantidad de iteraciones del metodo de punto fijo para obt
 
 El programa utilizado es GNU Octave, versión 4.2.2 y se procuró utilizar sintaxis compatible con Matlab, teniendo como única excepción la función \texttt{fplot} que brinda Octave para graficar funciones, despues de consultar con los docentes.
 
-\lstinputlisting[language=Octave,title=\texttt{mu.m}]{src/mu.m}
 
 \newpage
 \lstinputlisting[language=Octave,title=\texttt{main.m}]{src/main.m}
 
 \newpage
-\lstinputlisting[language=Octave,title=\texttt{mainsingle.m}]{src/mainsingle.m}
-
-\newpage
-\begin{lstlisting}[language=Octave,title=Generación de graficos]
-fplot(@f, [-0.02 0.02])
-fplot(@fderivada, [-0.02 0.02])
-fplot(@fderivada2, [-0.02 0.02])
-\end{lstlisting}
-
-\begin{lstlisting}[language=Octave,title=Truncamiento y gráfico de n]
-function y = graficar_n()
-    x = [1,10,100,1000,10000,100000,1000000,10000000];
-    y = [];
-    for n = x
-        n
-        tic;
-        integral = calcular_area(n)
-        y = [y,toc]; 
-        printf("Tiempo = %ds\n\n",y(length(y)))   
-    end
-    plot(x,y,'o-r')
-end
-\end{lstlisting}
-
-\newpage
 \section{Anexo II: Resultados Numéricos}
 
-\begin{lstlisting}[language=Octave,title=Corrida de \texttt{mu.m}]
->> mu
-mu_simple =    1.0000e-08
-mu_doble =    1.0000e-16
-\end{lstlisting}
-
-\begin{lstlisting}[language=Octave,title=title=Corrida de \texttt{main.m} con n original]
->> main
-n =    2.4160e+08
-Elapsed time is 12404.8 seconds.
-ans =    6.9458e+04
-\end{lstlisting}
-
-\begin{lstlisting}[language=Octave,title=title=Corrida de \texttt{main.m}]
-\begin{lstlisting}[language=Octave,title=Corrida de \texttt{mu.m}]
-n_sin_truncar =    2.4160e+08
-n =  5000000
-integral =    6.9458e+04  
-cpa =  28.571
-cpb =  4.9627
-te =    1.1201e+06
-\end{lstlisting}
-
-\begin{lstlisting}[language=Octave,title=title=Corrida de \texttt{mainsingle.m}]
->> mainsingle
-n_sin_truncar =  241403216
-n =  5000000
-integral =    6.9351e+04
-\end{lstlisting}
-
-\begin{lstlisting}[language=Octave,title=Cálculos hechos para el criterio de truncamiento de n]
->> graficar_n
-n =  1
-integral =    6.9497e+04
-Tiempo = 0.000295877s
-
-n =  10
-integral =    6.9459e+04
-Tiempo = 0.000695944s
-
-n =  100
-integral =    6.9465e+04
-Tiempo = 0.00530505s
-
-n =  1000
-integral =    6.9465e+04
-Tiempo = 0.0516629s
-
-n =  10000
-integral =    6.9458e+04
-Tiempo = 0.509583s
-
-n =  100000
-integral =    6.9458e+04
-Tiempo = 5.11305s
-
-n =  1000000
-integral =    6.9458e+04
-Tiempo = 51.1415s
-
-n =  10000000
-integral =    6.9458e+04
-Tiempo = 599.773s
-\end{lstlisting}
-
-
-\begin{lstlisting}[language=Octave,title=Cps calculados para las distintas iteraciones]
-cps_a =
-
-Columns 1 through 11:
-
-    28.571   12.500   11.834   11.772   11.765   11.765   11.765   11.765   11.765   11.765   11.765
-
-Columns 12 through 16:
-
-    11.765   11.768   11.857   12.212   11.102
-
-cps_b =
-
-Columns 1 through 11:
-
-    3.9212   4.7614   4.8657   4.8763   4.8774   4.8775   4.8775   4.8775   4.8775   4.8775   4.8776
-
-Columns 12 through 16:
-
-4.8770   4.8683   4.7962   4.7740   4.4409
-\end{lstlisting}
-
-
-\newpage
-\section{Anexo III: Re-Entrega}
-
-Se corre el programa nuevamente, buscando calcular el término de estabilidad y el error de redondeo, pero sin truncamiento de n.
-
-
-\begin{lstlisting}[language=Octave,title=Corrida entera sin truncamiento]
->> main
-integral =  69457.61896
-te =  76411515.04281
-error_redondeo =  0.76412
->> mainsingle
-integral =  16384
-\end{lstlisting}
-
-Para precision simple, el error total queda acotado por \texttt{0.76412} segun la formula \ref{errortotal} en ambos casos del enunciado. Para precision doble el cambio es despreciable en ambos casos con respecto a los demas errores.
-
-\newpage
 
 \phantomsection 
 \addcontentsline{toc}{section}{Bibliografía}
