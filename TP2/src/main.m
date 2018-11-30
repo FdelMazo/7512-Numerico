@@ -33,7 +33,7 @@ function test = main
   
   # Grafico de errores y metodos Euler / RK4
   #plotear_temps(tiempo, euler, rk, exactos);
-  plotear_errores(tiempo, euler, rk, exactos);
+  #plotear_errores(tiempo, euler, rk, exactos);
   
   # Comparacion radiacion y conveccion
   r_rk4 = conveccion_radacion_rk(fin, cadencia, masa, temperatura1, t0);
@@ -42,13 +42,13 @@ function test = main
   
   # Soaking
   sk = calcular_indice_soaking(r_rk4);
-  tiempo_soaking = (fin - tiempo(sk)) / 60
+  tiempo_soaking = (fin - tiempo(sk)) / 60;
   temp_soaking = calcular_temp_soaking(r_rk4, sk)
   
   # Tanteo
-  t1 = 1318.2;
-  t2 = 1193.5;
-  rk = rk_dividido(fin, cadencia, masa, t1, t2, t0);
+  t1 = 780;
+  t2 = 680;
+  rk = rk_dividido(fin, cadencia, masa, t1+273, t2+273, t0);
   rk = rk.-273;
   sk = calcular_indice_soaking(rk);
   temp_soaking = calcular_temp_soaking(rk, sk)
@@ -56,19 +56,30 @@ function test = main
   
   # Calculo automatico
   jacobiano = inv([0.75, 0.25 ; 0.25 , 0.75 ]);
-  err = [];
-  soak = [];
-  iter = [];
-  tsk_obj = round( 100 / 10000 * (padron - 90000) + 550 )
-
+  tsk_obj1 = round( 100 / 10000 * (padron - 90000) + 550 )
+  tsk_obj2 = round( 100 / 10000 * (padron - 90000) + 600 )
+  A = [tsk_obj2;tsk_obj2]
   tisk_obj = 10;
-  v0 = [tsk_obj; tsk_obj] # Semilla
+  tempsA = obtener_temps(fin, cadencia, masa, jacobiano, [667.45;667.45], tisk_obj, 667.45, tiempo)
+  tempsB = obtener_temps(fin, cadencia, masa, jacobiano, [tsk_obj1;tsk_obj1], tisk_obj, tsk_obj1, tiempo)
+  tempsC = obtener_temps(fin, cadencia, masa, jacobiano, [tsk_obj2;tsk_obj2], tisk_obj, tsk_obj2, tiempo)
+  rkA = rk_dividido(fin, cadencia, masa, tempsA(1)+273, tempsA(2)+273, t0);
+  rkB = rk_dividido(fin, cadencia, masa, tempsB(1)+273, tempsB(2)+273, t0);
+  rkC = rk_dividido(fin, cadencia, masa, tempsC(1)+273, tempsC(2)+273, t0);
+  
+  #plot(tiempo./60, rkA.-273)
+  #plot(tiempo./60, rkB.-273)
+  plot(tiempo./60, rkC.-273)
+  title("T(t)")
+  xlabel("t(m)")
+  ylabel("T(C°)")
+endfunction
+
+function temps = obtener_temps(fin, cadencia, masa, jacobiano, v0, tisk_obj, tsk_obj, tiempo)
   err_individual = 1;
   i = 0;
   while err_individual > 0.5*10^-2;
-    v1 = punto_fijo(fin, cadencia, masa, jacobiano, v0, tisk_obj, tsk_obj, tiempo)
-    soak = [soak v1];
-    iter = [iter i];
+    v1 = punto_fijo(fin, cadencia, masa, jacobiano, v0, tisk_obj, tsk_obj, tiempo);
     res_err = [(v1(1) - v0(1)) / v1(1); (v1(2) - v0(2)) / v1(2)];
     err_individual = norm(res_err, "inf");
     v0 = v1;
@@ -77,8 +88,8 @@ function test = main
       break
     endif
   endwhile
-  v1 = v1
   i = i
+  temps = v1;
 endfunction
 
 function temps = punto_fijo(fin, h, masa, jacobiano, temperaturas, tiemsk, tempsk, tiempo)
@@ -94,7 +105,11 @@ endfunction
 function rk = rk_dividido(fin, h, masa, t1, t2)
   v = conveccion_radacion_rk(fin/2, h, masa, t1, 273);
   len = columns(v);
-  rk = [v conveccion_radacion_rk(fin/2, h, masa, t2, v(len))];  
+  v2 = conveccion_radacion_rk(fin/2, h, masa, t2, v(len));
+  for i = 2:len
+    v = [v v2(i)];  
+  endfor
+  rk = v;
 endfunction
 
 function void = plotear_comparacion(tiempo, r_rk4, rk)
@@ -146,10 +161,10 @@ function error = calcular_error(exactos, otro)
   exactos = exactos .- 273;
   otro = otro .- 273;
   err = 0;
+  #e = [e err]
   for i = 1:columns(exactos);
-    err = err / exactos(i);
+    err = (exactos(i) - otro(i)) / exactos(i);
     e = [e err];
-    err = exactos(i) - otro(i);
   endfor
   error = e;
 endfunction

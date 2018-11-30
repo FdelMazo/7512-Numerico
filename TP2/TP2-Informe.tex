@@ -86,7 +86,11 @@
 \setcounter{page}{1}
 
 \section{Introducción}
-El trabajo práctico tiene como objetivo la resolucion de ecuaciones diferenciales mediante distintos metodos y la comparacion de los mismos asi como la resolucion de sistemas de ecuaciones no lineales. Para ello, se utilizara un modelo para el tratamiento termico de tubos de acero mediante la ley de la conservacion de la energia.
+El trabajo práctico tiene como objetivo la resolucion de ecuaciones diferenciales mediante distintos metodos y la comparacion de los mismos asi como la resolucion de sistemas de ecuaciones no lineales. Para ello, se utilizara un modelo para el tratamiento termico de tubos de acero mediante la ley de la conservacion de la energia. La siguiente es la ecuacion diferencial a resolver:
+
+\begin{equation}
+-mC \frac{dT}{dt} = h_c S (T - T_\infty) + \sigma \epsilon (T^4 - T^4_\infty)
+\end{equation}
 
 Específicamente:
 
@@ -120,199 +124,53 @@ A modo de comparación se usará la función calculada previamente con unicament
 
 \subsection{Temperatura y tiempo de soaking}
 
-Dado que tanto la temperatura como el tiempo de soaking son valores muy importantes para este proceso fueron calculados para los valores iniciales de temperatura. Con el horno a temperatura constante a 696°C
+Dado que tanto la temperatura como el tiempo de soaking son valores muy importantes para este proceso fueron calculados para los valores iniciales de temperatura. Con el horno a temperatura constante a 696°C. Para obtener este valor de tiempo se busco el punto donde la temperatura alcanzada es de 10°C menor a la final. Para alcanzar la temperatura de soaking se busco el promedio de temperatura durante ese intervalo de tiempo.
 
-Sabemos que el error de truncamiento producido por el método de trapecios compuestos es:
+Luego se variaron las temperaturas para alcanzar un tiempo de soaking menor. Con el tiempo de soaking a 10 minutos fijo, se variaron las temperaturas manualmente hasta llegar a dicho tiempo y luego se planteo un sistema de ecuaciones no lineales el cual fue resuelto con el metodo de punto fijo para obtener un resultado más preciso. Se utilizaron 2 cifras decimales como condicion de corte pues el problema, por algun motivo desconocido, no lograba a conseguir errores menores para valores de temperatura menores a los 800 °C.
 
-\begin{equation}
-    \epsilon_t = - \frac{{(b - a)}^3}{12 n^2} * f''(\xi)
-\end{equation}
-    
-Donde \(b, a\) son los limites de integración y \(n\) es la cantidad de trapecios. Como lo que queremos es acotar el error de truncamiento, debemos evaluar a la segunda derivada en su imagen máxima, es decir \(\xi = 1 \).
-
-Por lo tanto, y ahora con el error de truncamiento al que queremos llegar, despejamos la cantidad de trapecios:
-
-\begin{equation}
-    n  = \sqrt{ \abs{ - \frac{(b - a)^3 * f''(1)}{12 \epsilon_t}}} 
-\end{equation}
-
-
-Es con este n que se puede finalmente implementar la función de el método de los trapecios compuestos.
-
-\subsubsection{Truncamiento de n}
-
-Al despejar por el método de los trapecios compuestos el n necesario para tener el error deseado se notó que este valor era de tal magnitud y orden que computacionalmente carecería de sentido usarlo para cada cálculo. Es por esto que se decidió hacer un truncamiento de este valor, para poder tratarlo como es debido y en un lógico margen de tiempo. De todas formas, solo anecdóticamente, se incluye una corrida del programa con el n original.
-
-El criterio para truncar n es el de ver como escala el cálculo de la integral respecto del valor, y luego decidir un punto de corte tratable arbitrariamente (en nuestro caso, 5 minutos). Se puede ver en el gráfico \ref{fig:calcularn} que esta es una función lineal, lo cual tiene sentido ya que lo único que adiciona computacionalmente es el ciclo definido \texttt{for} de la función, haciendolo \(\mathcal{O}(n)\), siendo n el mismo n con el que venimos tratando, redundantemente.
-
-\subsection{Condición del problema y término de estabilidad}
-
-Para realizar las perturbaciones lo haremos sobre alpha y beta respectivamente, introduciendo un error en un ciclo de 16 iteraciones. Una vez obtenidos distintos resultados y teniendo en cuenta el primer valor obtenido, calculamos la nueva condición del problema, una por iteración. Finalmente, de todos los CP obtenidos, tomamos el mayor, tanto para alpha como para beta y es ese nuestro resultado final.
-
-Es ahora que, teniendo en cuenta los valores de la integral con precisión simple y precisión doble (utilizando el valor de n no truncado, para poder apreciar de manera mas exagerada la inestabilidad del algoritmo) podemos calcular el valor del término de estabilidad. Esto lo hacemos con la siguiente ecuación:
-
-
-\begin{equation}
-    Te = \frac{integral\_doble - integral\_simple}{integral\_doble*\mu_s}
-\end{equation}
-
-Finalmente, se grafica en la figura \ref{fig:cpsa} y la figura \ref{fig:cpsb} el cálculo del Cp respecto de alpha y beta en cada iteración.
-
-\subsection{Error total}
-
-Sabiendo que el error total es la sumatoria de los errores inherentes, de redondeo y de truncamiento querémos ahora acotar el error total.
-
-
-\begin{equation}
-Et = Ei + Er + Etr
-\end{equation}
-
-
-\begin{equation}
-    Et = Cp * r + Te * \mu_s + Etr 
-\end{equation}
-
-
-Este cálculo lo haremos con dos casos en particular:
-
-\begin{itemize}
-\item Error inherente nulo
-\item Error inherente acotado
-\end{itemize}
-
-\subsection{Fuentes de error}
-
-Se puede observar en ambos casos que la mayor fuente de error es el error de redondeo, y esto tiene sentido de acuerdo al método empleado. Al efectuar el metodo de trapecios compuestos se requieren computar muchisimas sumas y multiplicaciones, cada una con sus respectivos errores de redondeo los cuales son variantes en base al error de maquina particular utilizado. Considerando el alto valor de n calculado, la cantidad de sumas es extremadamente grande y por lo tanto el error toma un valor incluso mayor al de truncamiento para dicho n. Todo esto considerando al n original pedido para acotar al error de truncamiento.
+Finalmente se tomaron 3 temperaturas (696°C, 648°C y 698°C) y se resolvio el sistema, graficando la evolucion de la temperatura en las figuras \ref{fig:A}, \ref{fig:B} y \ref{fig:C} respectivamente.
 
 \section{Resultados}
 
-\subsection{Estimación de \( \mu \) }
+\subsection{Graficos comparativos y evolucion de la temperatura respecto al tiempo}
 
-Con el algoritmo utilizado se llego al resultado \texttt{\num{1e-8}} para el \(\mu\) de precisión simple y \texttt{\num{1e-16}} para el \(\mu\) de precisión doble.
+Utilizando ambos metodos de resolucion de ecuaciones diferenciales se llegaron a los siguientes resultados para calor por conveccion unicamente:
 
-\subsection{Función y sus derivadas}
+[ACA VAN LAS FIGURAS METODOS Y ERRORES]
 
-\begin{figure}[H]
-	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/funcion.jpg}}
-	\caption{\(f(x)\)}
-	\label{fig:funcion}
-\end{figure}
+Utilizando el metodo de RK4 se llego a la siguiente grafica comparativa para el calor por conveccion y radiacion:
 
-\begin{figure}[H]
-	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/funcionderivada.jpg}}
-	\caption{\(f'(x)\)}
-	\label{fig:funcionderivada}
-\end{figure}
+[ACA VA LA FIGURA COMPARACION]
 
-\begin{figure}[H]
-	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/funcionderivada2.jpg}}
-	\caption{\(f''(x)\)}
-	\label{fig:funcionderivada2}
-\end{figure}
+Se obtuvieron:
 
+tiempo_soaking =  2.0833
+temp_soaking =  667.45
 
-\begin{figure}[H]
-	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/funcionderivada2zoom.jpg}}
-	\caption{\(f''(x)\), con limites 1 a 100 para poder ver como claramente el 1 es el máximo valor de su imagen.}
-	\label{fig:funcionderivada2zoom}
-\end{figure}
+Y mediante el tanteo se aumento el tiempo de soaking a 10 minutos con los valores de temperatura:
 
-\subsection{Método de trapecios compuestos}
+T1 = 780
+T2 = 680
 
-\subsubsection{Truncamiento de n}
+Finalmente la tabla final de valores con el SENL:
 
-\begin{figure}[H]
-	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/calcularn.jpg}}
-	\caption{Calculo de la integral para distintos n en funcion del tiempo}
-	\label{fig:calcularn}
-\end{figure}
+LLENAR LA TABLA DE VALORES CON:
 
-\subsubsection{Precisión simple}
-
-Haciendo los calculos se vió que n es igual a \texttt{241403216}, y luego se decidió truncar el número n a \texttt{5000000}. Para el n original la integral dió como resultado \texttt{\num{6.9458e+04}}, mientras que para n truncado dió \texttt{\num{6.9351e+04}}.
-
-\subsubsection{Precisión doble}
-
-Haciendo los calculos se vió que n es igual a \texttt{\num{2.4160e8}}, y luego se decidió truncar el número n a \texttt{5000000} para que sea un cálculo tratable. Para el n truncado la integral dió \texttt{\num{6.9458e+04}}.
-
-\subsection{Condición del problema y término de estabilidad}
-
-Con el método de perturbaciones experimentales llegamos a un cp respecto de alpha igual a \texttt{28.571} y respecto de beta igual a \texttt{4.9627}. El término de estabilidad es igual a \texttt{\num{1.1201e6}}.
-
-\begin{figure}[H]
-	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/cpsa.jpg}}
-	\caption{Cp respecto de alpha por iteración}
-	\label{fig:cpsa}
-\end{figure}
-
-\begin{figure}[H]
-	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/cpsb.jpg}}
-	\caption{Cp respecto de beta por iteración}
-	\label{fig:cpsb}
-\end{figure}
-
-\subsection{Error total}
-
-\subsubsection{Error inherente nulo}
-
-\begin{equation}
-\label{errortotal}
- Et = Cp * r + Te * \mu_s + Etr 
-\end{equation}
-
-\begin{equation}
- Et < 0 + 1.1201*10^6 * 1*10^{-8} + 10^{-5}
-\end{equation}
-
-\begin{equation}
- Et < 0.011211
-\end{equation}
-
-\begin{equation}
-  Et = Cp * r + Te * \mu_d + Etr 
-\end{equation}
-
-\begin{equation}
-    Et < 0 + 1.1201*10^6 * 1*10^{-16} + 10^{-5}
-\end{equation}
-
-\begin{equation}
-    Et < 10^{-5}
-\end{equation}
-  
-\subsubsection{Error inherente acotado}
-
-\begin{equation}
-    Et = Cp * r + Te * \mu_s + Etr
-\end{equation}
-
-\begin{equation}
-  Et < 0.5*10^{-4} + 1.1201*10^6 * 1*10^{-8} + 10^{-5}
-\end{equation}
-
-\begin{equation}
-    Et < 0.011261
-\end{equation}
-
-\begin{equation}
-    Et = Cp * r + Te * \mu_d + Etr 
-\end{equation}
-
-\begin{equation}
-    Et < 0.5*10^{-4} + 1.1201*10^6 * 1*10^{-16} + 10^{-5}
-\end{equation}
-
-\begin{equation}
-    Et < 6*10^{-5}
-\end{equation}
+A 10 667 777.41 684.22 13
+B 10 648 758.84 665.49 13
+C 10 698 792.59 714.23 13
 
 \section{Conclusiones}
 
-Por empezar podemos concluir que el problema presentado esta mas cerca de estar bien condicionado (pues la condicion del problema no es tan lejana a 1) de lo que está de ser estable. Esto se debe al enorme valor que toma el termino de estabilidad debido a la gran cantidad de sumas que se realizan. Dichas sumas llevan atadas varios errores de redondeo que terminan produciendo el error mas importante del algoritmo. Si bien las cotas de error fueron calculadas con un error de maquina single dicho error puede ser acotado con una mejor precision de maquina (double) y llegar a un resultado de menor error. Concluimos que al aumentar la precision el error de redondeo disminuye y por lo tanto la cota de error total tambien lo hace. Distinto es disminuir la cantidad de cuentas a realizar (o dicho de otra forma, disminuir el valor de n) lo cual si bien disminuye el error de redondeo provocaría una mayor cota en el error de truncamiento. Por lo tanto a la hora de realizar calculos numéricos hay que trabajar con la mejor precisión posible siempre que queramos conseguir cotas de error lo mas pequeñas posibles.
+Las ecuaciones diferenciales resueltas por metodos numericos si bien tienen su grado de error pueden solucionar problemas incalculables. Esto es extremadamente util para casos como este donde hay ecuaciones que no son resolvibles pero un pequeño grado de error no es lo suficientemente significativo entonces los metodos como Euler o RK4 pueden optimizar el tiempo requerido para el calculo y resolucion de un problema. Se pudo observar que RK4 es un algoritmo con mayor precision pero tambien un algoritmo de mayor complejidad que Euler. En la teoria, como RK4 es un algoritmo de orden mayor de error que Euler era esperable que su precision fuese mayor. Resulta extraño que el metodo de punto fijo no haya podido converger pero haya logrado dar una precision aceptable. La condicion de corte del metodo fue reducida a una cifra decimal menos debido a esto y logro converger en todos los casos propuestos.
 
-Ahora bien, para un nivel de precisión doble el error de redondeo (al menos para el termino de estabilidad calculado) es basicamente despreciable contra el error de truncamiento. Esto sucede ya que al aumentar la precision, como bien dicho antes, se consiguen mejores cotas de error pues se pierde menos información en cada operación. Esto entonces nos lleva a pensar en que sería lógico buscar conseguir un error de truncamiento aun mas pequeño para que el error de redondeo deje de ser despreciable pero el resultado sea aún mas exacto. Pero esto tiene tambien sus, presentadas anteriormente, desventajas en tanto a tiempo de calculo no manejable. Se podría aumentar el numero de trapecios pero a costa de un tiempo de ejecucion mucho mas elevado y menos manejable. Ahora bien, considerando la cota de error inherente relativo, este error pasa a ser aquel de mayor relevancia pues su magnitud es mayor a la del mismo truncamiento. En este caso no tendría sentido intentar disminuir el error de truncamiento mucho mas pues, si bien no es totalmente despreciable, reducirlo no es rentable considerando la cantidad de tiempo necesario para realizar dichos calculos y tampoco es rentable pues no es siquiera el error mas relevante de todo el calculo.
+Hablando mas especificamente respecto de este trabajo practico se puede concluir en que el calor por radiacion no es para nada despreciable en comparacion al de conveccion como fue observado graficamente.
 
-Tambien podemos observar que, si bien el termino de estabilidad es muy grande, la diferencia en las medidas de la integral con precision simple y doble no estuvieron tan alejadas como esperado. Esperabamos que la diferencia fuera mayor pues los redondeos iban a afectar de forma mas directa al resultado teniendo menos precision a la hora de calcular pero evidentemente no fué así en nuestro caso. Pasamos gran parte del tiempo intentando identificar un error en el calculo de la integral en precision single sin poder lograrlo por lo que concluimos que o bien nuestra hipotesis era falsa o bien hay un error algoritmico en el calculo con dicho nivel de precision (el cual lamentablemente Octave no facilita su trabajo). Una pequeña conclusión a la cual llegamos luego de dicho tiempo fue que, logicamente, el termino de estabilidad depende directamente del algoritmo utilizado pues, a la hora de implementar el metodo de los trapecios, siempre realizamos sumas de numeros de magnitudes similares (pues, algoritmicamente hablando, calculamos el area de cada trapecio y los sumamos, en lugar de sumar todas las alturas de dichos trapecios y luego multiplicarlos por sus diminutas bases) y si bien los resultados no fueron tampoco demasiado diferentes, se pudo observar que usando un algoritmo distinto al que propusimos nosotros llevaba a un termino de estabilidad aún mas elevado y por lo tanto un error más elevado.
+Los metodos numericos son extremadamente utiles para cuando existen ecuaciones diferenciales no lineales pues son mucho mas faciles de resolver y con errores pequeños. Para las ecuaciones diferenciales lineales el error cometido puede incluso ser lo suficientemente pequeño pero teniendo la solucion exacta en general sería mejor obtener dicho valor siempre y cuando no sea demasiado costoso.
+
+En tanto a los metodos de resolucion para SENL es evidente que es mucho más sencillo resolverlos con dichos metodos si existen multiples variables. Se pudo observar en el item 3 del trabajo practico durante el tanteo que a mi particularmente me tomo al menos unos 15 intentos hasta llegar a un resultado que siquiera llega a la precision del metodo de punto fijo. La cantidad de iteraciones del metodo para los 3 casos fueron siempre 13, no solo es mas rapido sino que tambien mas preciso. Para este tipo de problemas inversos resulta ser muy util.
+
+Se podría aumentar la cantidad de iteraciones del metodo de punto fijo para obtener un error aun menor y acercarse aun más a la realidad, pero la relacion con respecto a su costo puede no ser rentable. La velocidad de convergencia de punto fijo puede ser lo suficientemente costosa como para optar por una menor precision con una menor cantidad de recursos.
 
 \newpage
 \appendix
