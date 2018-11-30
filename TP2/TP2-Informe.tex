@@ -20,6 +20,7 @@
   columns=fullflexible,
   frame=single,
   breaklines=true,
+  literate={°}{{$\degree$}}1,
   postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
 }
 
@@ -156,7 +157,7 @@ Utilizando ambos metodos de resolucion de ecuaciones diferenciales se llegaron a
 
 \begin{figure}[H]
 	\makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{figuras/metodos.jpg}}
-	\caption{Cp respecto de beta por iteración}
+	\caption{Métodos}
 	\label{fig:metodos}
 \end{figure}
 
@@ -186,11 +187,16 @@ T2 = 680
 
 Finalmente la tabla final de valores con el SENL:
 
-LLENAR LA TABLA DE VALORES CON:
-
-A 10 667 777.41 684.22 13
-B 10 648 758.84 665.49 13
-C 10 698 792.59 714.23 13
+\begin{table}[]
+\centering
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+A & 10 & 667\degree C & 777.41min & 684.22min \\
+B & 10 & 648\degree C & 758.84min & 665.49min \\
+C & 10 & 698\degree C & 792.59min & 714.23min \\
+\hline
+\end{tabular}
+\end{table}
 
 \section{Conclusiones}
 

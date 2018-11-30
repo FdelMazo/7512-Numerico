@@ -44,8 +44,8 @@ function test = main
   sk = calcular_indice_soaking(r_rk4);
   tiempo_soaking = (fin - tiempo(sk)) / 60;
   temp_soaking = calcular_temp_soaking(r_rk4, sk);
-  printf("El tiempo de soaking para T1 = %d 캜 y T2 = %d 캜 es:\n%d minutos\n\n", temperatura1, temperatura2, tiempo_soaking);
-  printf("Su temperatura de soaking es:\n%d 캜\n\n", temp_soaking);
+  printf("El tiempo de soaking para T1 = %d 째C y T2 = %d 째C es:\n%d minutos\n\n", temperatura1, temperatura2, tiempo_soaking);
+  printf("Su temperatura de soaking es:\n%d 째C\n\n", temp_soaking);
   
   # Tanteo
   t1 = 780;
@@ -69,12 +69,12 @@ function test = main
   rkB = rk_dividido(fin, cadencia, masa, tempsB(1)+273, tempsB(2)+273, t0);
   rkC = rk_dividido(fin, cadencia, masa, tempsC(1)+273, tempsC(2)+273, t0);
   printf("\nCalculos automaticos (10 minutos de soaking para todas):\n\n")
-  printf("Las temperaturas de inicio para una temperatura de soaking de %d 캜 son:\n", temp_soaking);
-  printf("T1 = %d 캜\nT2 = %d 캜\n\n", tempsA(1), tempsA(2));  
-  printf("Las temperaturas de inicio para una temperatura de soaking de %d 캜 son:\n", tsk_obj1);
-  printf("T1 = %d 캜\nT2 = %d 캜\n\n", tempsB(1), tempsB(2));
-  printf("Las temperaturas de inicio para una temperatura de soaking de %d 캜 son:\n", tsk_obj2);
-  printf("T1 = %d 캜\nT2 = %d 캜\n\n", tempsC(1), tempsC(2));
+  printf("Las temperaturas de inicio para una temperatura de soaking de %d 째C son:\n", temp_soaking);
+  printf("T1 = %d 째C\nT2 = %d 째C\n\n", tempsA(1), tempsA(2));  
+  printf("Las temperaturas de inicio para una temperatura de soaking de %d 째C son:\n", tsk_obj1);
+  printf("T1 = %d 째C\nT2 = %d 째C\n\n", tempsB(1), tempsB(2));
+  printf("Las temperaturas de inicio para una temperatura de soaking de %d 째C son:\n", tsk_obj2);
+  printf("T1 = %d 째C\nT2 = %d 째C\n\n", tempsC(1), tempsC(2));
   
   plot(tiempo./60, rkA.-273)
   plot(tiempo./60, rkB.-273)
