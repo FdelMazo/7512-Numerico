@@ -7,8 +7,10 @@ function test = main
   global LARGO_TUBO = 12;
   global LARGO_HORNO = 50;
   global NBOL = 50;
-  temperatura1 = round( 473 / 10000 * (padron - 90000) + 773 );
-  temperatura2 = round( 473 / 10000 * (padron - 90000) + 773 );
+  temperatura1 = round( 200 / 10000 * (padron - 90000) + 500 )
+  temperatura2 = round( 200 / 10000 * (padron - 90000) + 500 );
+  temperatura1 = temperatura1 + 273;
+  temperatura2 = temperatura2 + 273;
   global HC = 20;
   global SIGMA = 5.6703*10^-8;
   global EPSILON = 0.85;
@@ -31,7 +33,7 @@ function test = main
   
   # Grafico de errores y metodos Euler / RK4
   #plotear_temps(tiempo, euler, rk, exactos);
-  #plotear_errores(tiempo, euler, rk, exactos);
+  plotear_errores(tiempo, euler, rk, exactos);
   
   # Comparacion radiacion y conveccion
   r_rk4 = conveccion_radacion_rk(fin, cadencia, masa, temperatura1, t0);
@@ -57,20 +59,23 @@ function test = main
   err = [];
   soak = [];
   iter = [];
-  tsk_obj = 855;
+  tsk_obj = round( 100 / 10000 * (padron - 90000) + 550 )
+
   tisk_obj = 10;
   v0 = [tsk_obj; tsk_obj] # Semilla
   err_individual = 1;
   i = 0;
-  while err_individual > 0.5*10^-3;
-    v1 = punto_fijo(fin, cadencia, masa, jacobiano, v0, tisk_obj, tsk_obj, tiempo);
+  while err_individual > 0.5*10^-2;
+    v1 = punto_fijo(fin, cadencia, masa, jacobiano, v0, tisk_obj, tsk_obj, tiempo)
     soak = [soak v1];
     iter = [iter i];
     res_err = [(v1(1) - v0(1)) / v1(1); (v1(2) - v0(2)) / v1(2)];
-    err_individual = norm(res_err, 1)
-    err = [err err_individual];
+    err_individual = norm(res_err, "inf");
     v0 = v1;
     i+=1;
+    if (i == 200)
+      break
+    endif
   endwhile
   v1 = v1
   i = i
@@ -80,7 +85,7 @@ function temps = punto_fijo(fin, h, masa, jacobiano, temperaturas, tiemsk, temps
   rk = rk_dividido(fin, h, masa, temperaturas(1) + 273, temperaturas(2) + 273);
   rk = rk.-273;
   sk = calcular_indice_soaking(rk);
-  temp_soaking = calcular_temp_soaking(rk, sk) - 273;
+  temp_soaking = calcular_temp_soaking(rk, sk);
   tiempo_soaking = (fin - tiempo(sk)) / 60;
   v = [tiempo_soaking - tiemsk; temp_soaking - tempsk];
   temps = temperaturas - jacobiano * v;
@@ -151,13 +156,14 @@ endfunction
 
 function void = plotear_temps(t, euler, rk, exactas)
   t = t ./ 60;
-  plot(t, exactas .- 273);
+  ex = plot(t, exactas .- 273);
   title("T(t)")
   xlabel("t(m)")
   ylabel("T(C°)")
+  legend(ex, "Valor exacto")
   hold on
-  plot(t, euler .- 273)
-  plot(t, rk .-273)
+  eu = plot(t, euler .- 273)
+  rk = plot(t, rk .-273)
   hold off
 endfunction
   
